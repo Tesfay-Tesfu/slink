@@ -1,2 +1,0 @@
-# This file is intentionally left blank.
-# Python version is set via RENDER environment variable.
