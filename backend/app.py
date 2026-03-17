@@ -20,10 +20,15 @@ from sqlalchemy.exc import OperationalError
 # On Render, these will come from environment variables
 load_dotenv()
 
-# Initialize Flask app
-app = Flask(__name__, 
-            template_folder='../frontend/templates',
-            static_folder='../frontend/static')
+# Get absolute paths for templates and static files
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(backend_dir)
+frontend_dir = os.path.join(project_root, 'frontend')
+
+# Initialize Flask app with absolute paths
+app = Flask(__name__,
+            template_folder=os.path.join(frontend_dir, 'templates'),
+            static_folder=os.path.join(frontend_dir, 'static'))
 
 # ==================== CONFIGURATION ====================
 # Secret Key - MUST be set in Render environment variables
