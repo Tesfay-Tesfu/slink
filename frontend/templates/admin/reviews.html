@@ -1,0 +1,88 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Manage Reviews - Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Reviews</h1>
+    <div>
+        <select class="form-select" onchange="window.location.href='?status='+this.value" style="width: auto; display: inline-block;">
+            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+            <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+            <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All</option>
+        </select>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Service/Teacher</th>
+                        <th>Rating</th>
+                        <th>Comment</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in reviews %}
+                    <tr>
+                        <td>{{ review.id }}</td>
+                        <td>{{ review.customer_name }}</td>
+                        <td>
+                            {% if review.service_rel %}
+                                {{ review.service_rel.name }}
+                            {% elif review.teacher_rel %}
+                                {{ review.teacher_rel.name }}
+                            {% else %}
+                                General
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% for i in range(review.rating) %}
+                                <i class="fas fa-star" style="color: #f2b341;"></i>
+                            {% endfor %}
+                        </td>
+                        <td>{{ review.comment[:50] }}{% if review.comment|length > 50 %}...{% endif %}</td>
+                        <td>
+                            <span class="badge bg-{% if review.status == 'approved' %}success{% elif review.status == 'pending' %}warning{% else %}danger{% endif %}">
+                                {{ review.status }}
+                            </span>
+                        </td>
+                        <td>{{ review.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if review.status == 'pending' %}
+                            <form method="POST" action="{{ url_for('admin_update_review_status', review_id=review.id) }}" style="display: inline;">
+                                <input type="hidden" name="status" value="approved">
+                                <button type="submit" class="btn btn-sm btn-success" title="Approve">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ url_for('admin_update_review_status', review_id=review.id) }}" style="display: inline;">
+                                <input type="hidden" name="status" value="rejected">
+                                <button type="submit" class="btn btn-sm btn-warning" title="Reject">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                            <form method="POST" action="{{ url_for('admin_delete_review', review_id=review.id) }}" style="display: inline;" onsubmit="return confirm('Delete this review?')">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

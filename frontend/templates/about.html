@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}About Us - SOLI MICROLINK{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-5" style="color: #002868;">About SOLI MICROLINK</h1>
+    
+    <div class="row mb-5">
+        <!-- Left Column - Text -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 p-4" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <div class="card-body">
+                    <h2 style="color: #002868; margin-bottom: 1.5rem;">Our Story</h2>
+                    <p style="font-size: 1.1rem; line-height: 1.8; color: #1e2f4d;">{{ about.content }}</p>
+                    
+                    <h3 style="color: #002868; margin: 2rem 0 1rem;">Our Mission</h3>
+                    <p style="font-size: 1.1rem; line-height: 1.8;"><i class="fas fa-bullseye" style="color: #4169E1; margin-right: 10px;"></i> {{ about.mission }}</p>
+                    
+                    <h3 style="color: #002868; margin: 2rem 0 1rem;">Our Vision</h3>
+                    <p style="font-size: 1.1rem; line-height: 1.8;"><i class="fas fa-eye" style="color: #4169E1; margin-right: 10px;"></i> {{ about.vision }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column - Owner Photo -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 p-4 text-center" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop" 
+                             alt="Selam Tesfay - Owner" 
+                             style="width: 250px; height: 250px; border-radius: 50%; object-fit: cover; border: 5px solid #4169E1; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    </div>
+                    <h2 style="color: #002868;">Selam Tesfay</h2>
+                    <p style="color: #4169E1; font-size: 1.2rem; font-weight: 500;">Founder & CEO</p>
+                    <p style="color: #1e2f4d; font-style: italic; margin-top: 1rem;">"Empowering the next generation of African innovators through quality education and research support."</p>
+                    <div class="social-icons mt-4">
+                        <a href="#" style="background: #002868; color: white; width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 0 5px;"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" style="background: #002868; color: white; width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 0 5px;"><i class="fab fa-twitter"></i></a>
+                        <a href="#" style="background: #002868; color: white; width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 0 5px;"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Section -->
+    <div class="row mb-5">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-4" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <i class="fas fa-users fa-3x mb-3" style="color: #4169E1;"></i>
+                <h2 class="display-4" style="color: #002868;">24+</h2>
+                <p class="mb-0">Expert Teachers</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-4" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <i class="fas fa-book-open fa-3x mb-3" style="color: #4169E1;"></i>
+                <h2 class="display-4" style="color: #002868;">30+</h2>
+                <p class="mb-0">Courses</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-4" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <i class="fas fa-star fa-3x mb-3" style="color: #4169E1;"></i>
+                <h2 class="display-4" style="color: #002868;">500+</h2>
+                <p class="mb-0">Students</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-4" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <i class="fas fa-globe-africa fa-3x mb-3" style="color: #4169E1;"></i>
+                <h2 class="display-4" style="color: #002868;">10+</h2>
+                <p class="mb-0">Countries</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Core Values -->
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-center mb-4" style="color: #002868;">Our Core Values</h2>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-3" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <i class="fas fa-gem fa-2x mb-2" style="color: #4169E1;"></i>
+                <h4 style="color: #002868;">Excellence</h4>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-3" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <i class="fas fa-lightbulb fa-2x mb-2" style="color: #4169E1;"></i>
+                <h4 style="color: #002868;">Innovation</h4>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-3" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <i class="fas fa-hand-holding-heart fa-2x mb-2" style="color: #4169E1;"></i>
+                <h4 style="color: #002868;">Integrity</h4>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-3" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <i class="fas fa-universal-access fa-2x mb-2" style="color: #4169E1;"></i>
+                <h4 style="color: #002868;">Accessibility</h4>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - SOLI MICROLINK{% endblock %}
+
+{% block content %}
+<h1 style="font-size: 2.5rem; margin-bottom: 2rem;">
+    <i class="fas fa-credit-card" style="color: #BF0A30;"></i> Checkout
+</h1>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+            <div class="card-body">
+                <h4 class="card-title mb-4">Customer Information</h4>
+                
+                <form id="checkoutForm" method="POST" action="{{ url_for('process_checkout') }}">
+                    {% if not session.user_id %}
+                    <div class="mb-3">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" name="customer_name" id="customer_name" required style="border-radius: 60px; padding: 0.8rem;">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" class="form-control" name="customer_email" id="customer_email" required style="border-radius: 60px; padding: 0.8rem;">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" name="customer_phone" id="customer_phone" style="border-radius: 60px; padding: 0.8rem;">
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info" style="border-radius: 30px;">
+                        <i class="fas fa-user-check"></i>
+                        Checking out as <strong>{{ session.user_name }}</strong> ({{ session.user_email }})
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Additional Notes</label>
+                        <textarea class="form-control" name="notes" id="notes" rows="3" style="border-radius: 30px;"></textarea>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h4 class="mb-3">Payment Method</h4>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="payment_method" id="stripe" value="stripe" checked>
+                        <label class="form-check-label" for="stripe">
+                            <i class="fab fa-cc-stripe" style="color: #6772E5;"></i> Credit Card (Stripe)
+                        </label>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="payment_method" id="pay_later" value="pay_later">
+                        <label class="form-check-label" for="pay_later">
+                            <i class="fas fa-clock"></i> Pay Later (Invoice)
+                        </label>
+                    </div>
+                    
+                    <div id="stripe-element-container" style="display: none;">
+                        <div id="stripe-element" class="mb-3" style="border: 1px solid #ddd; padding: 1rem; border-radius: 60px;"></div>
+                        <div id="card-errors" class="text-danger mb-3" role="alert"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100" id="submit-button" style="background: #002868; border: none; border-radius: 60px; padding: 1rem;">
+                        <i class="fas fa-lock"></i> Complete Order
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-5">
+        <div class="card" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+            <div class="card-body">
+                <h4 class="card-title mb-4">Order Summary</h4>
+                
+                {% for item in cart_items %}
+                <div class="d-flex justify-content-between mb-2">
+                    <div>
+                        {% if item.item_type == 'service' %}
+                            <i class="fas fa-book-open" style="color: #BF0A30;"></i>
+                        {% else %}
+                            <i class="fas fa-chalkboard-teacher" style="color: #BF0A30;"></i>
+                        {% endif %}
+                        {% if item.service %}
+                            {{ item.service.name }}
+                        {% elif item.teacher %}
+                            {{ item.teacher.name }}
+                        {% endif %}
+                        <small class="text-muted d-block">
+                            {% if item.booking_date %}
+                                {{ item.booking_date.strftime('%b %d') }} at {{ item.booking_time }}
+                            {% endif %}
+                            x{{ item.quantity }}
+                        </small>
+                    </div>
+                    <span>${{ "%.2f"|format(item.price * item.quantity) }}</span>
+                </div>
+                {% endfor %}
+                
+                <hr>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <span>${{ "%.2f"|format(total) }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Tax:</span>
+                    <span>$0.00</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-3">
+                    <strong>Total:</strong>
+                    <strong class="h4" id="totalAmount">${{ "%.2f"|format(total) }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+$(document).ready(function() {
+    var stripe = Stripe('{{ stripe_publishable_key }}');
+    var elements = stripe.elements();
+    
+    // Custom styling
+    var style = {
+        base: {
+            color: '#32325d',
+            fontFamily: '"Inter", "Helvetica Neue", Helvetica, sans-serif',
+            fontSmoothing: 'antialiased',
+            fontSize: '16px',
+            '::placeholder': {
+                color: '#aab7c4'
+            }
+        },
+        invalid: {
+            color: '#fa755a',
+            iconColor: '#fa755a'
+        }
+    };
+    
+    // Create card element
+    var card = elements.create('card', {style: style});
+    
+    // Toggle Stripe element
+    $('input[name="payment_method"]').change(function() {
+        if ($(this).val() === 'stripe') {
+            $('#stripe-element-container').show();
+            card.mount('#stripe-element');
+        } else {
+            $('#stripe-element-container').hide();
+            card.unmount();
+        }
+    });
+    
+    // Handle form submission
+    $('#checkoutForm').submit(function(event) {
+        event.preventDefault();
+        
+        var paymentMethod = $('input[name="payment_method"]:checked').val();
+        
+        // Validate customer info for guests
+        {% if not session.user_id %}
+        var customerName = $('#customer_name').val();
+        var customerEmail = $('#customer_email').val();
+        
+        if (!customerName || !customerEmail) {
+            alert('Please fill in your name and email');
+            return;
+        }
+        {% endif %}
+        
+        if (paymentMethod === 'stripe') {
+            // Handle Stripe payment
+            stripe.createToken(card).then(function(result) {
+                if (result.error) {
+                    $('#card-errors').text(result.error.message);
+                } else {
+                    // Submit form with token
+                    var form = $('#checkoutForm');
+                    form.append($('<input type="hidden" name="stripe_token">').val(result.token.id));
+                    form.off('submit').submit();
+                }
+            });
+        } else {
+            // Handle other payment methods
+            $('#checkoutForm').off('submit').submit();
+        }
+    });
+});
+</script>
+{% endblock %}

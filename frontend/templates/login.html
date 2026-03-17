@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Afro-Merica{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 450px; margin: 3rem auto;">
+    <div class="card" style="border-radius: 60px; border: none; box-shadow: 0 20px 40px -20px rgba(0,40,104,0.2);">
+        <div class="card-body p-5">
+            <h2 class="text-center mb-4" style="color: #002868;">Welcome Back</h2>
+            
+            <form method="POST" action="{{ url_for('login') }}">
+                {% if request.args.get('next') %}
+                <input type="hidden" name="next" value="{{ request.args.get('next') }}">
+                {% endif %}
+                
+                <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-control" name="email" required style="border-radius: 60px; padding: 0.8rem;">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" name="password" required style="border-radius: 60px; padding: 0.8rem;">
+                </div>
+                
+                <div class="mb-4 form-check">
+                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                    <label class="form-check-label" for="remember">Remember me</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100" style="background: #002868; border: none; border-radius: 60px; padding: 1rem;">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+            
+            <div class="text-center mt-3">
+                <a href="{{ url_for('forgot_password') }}" style="color: #666;">Forgot Password?</a>
+            </div>
+            
+            <hr class="my-4">
+            
+            <div class="text-center">
+                <p>Don't have an account? <a href="{{ url_for('register') }}" style="color: #BF0A30;">Register here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - Afro-Merica{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+            <div class="card-body text-center p-4">
+                <div style="width: 100px; height: 100px; border-radius: 50%; background: #002868; color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 1rem;">
+                    {{ user.full_name[:1] }}
+                </div>
+                <h3>{{ user.full_name }}</h3>
+                <p class="text-muted">{{ user.email }}</p>
+                <p><i class="fas fa-phone"></i> {{ user.phone or 'No phone provided' }}</p>
+                <p><span class="badge bg-{% if user.is_verified %}success{% else %}warning{% endif %}">
+                    {% if user.is_verified %}Verified{% else %}Unverified{% endif %}
+                </span></p>
+                <p><small>Member since {{ user.created_at.strftime('%B %Y') }}</small></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+            <div class="card-header bg-transparent p-4" style="border-bottom: 2px solid #f0f0f0;">
+                <h5 class="mb-0">Edit Profile</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('update_profile') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" name="full_name" value="{{ user.full_name }}" required style="border-radius: 60px;">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" value="{{ user.email }}" disabled style="border-radius: 60px; background: #f8f9fa;">
+                        <small class="text-muted">Email cannot be changed</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-control" name="phone" value="{{ user.phone or '' }}" style="border-radius: 60px;">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="background: #002868; border: none; border-radius: 60px; padding: 0.8rem 2rem;">
+                        Update Profile
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mb-4" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+            <div class="card-header bg-transparent p-4" style="border-bottom: 2px solid #f0f0f0;">
+                <h5 class="mb-0">Change Password</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('change_password') }}">
+                    <div class="mb-3">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-control" name="current_password" required style="border-radius: 60px;">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-control" name="new_password" required style="border-radius: 60px;">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" name="confirm_password" required style="border-radius: 60px;">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-warning" style="border-radius: 60px; padding: 0.8rem 2rem;">
+                        Change Password
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+            <div class="card-header bg-transparent p-4" style="border-bottom: 2px solid #f0f0f0;">
+                <h5 class="mb-0">My Bookings</h5>
+            </div>
+            <div class="card-body p-4">
+                {% if bookings %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Booking #</th>
+                                <th>Service</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td>{{ booking.booking_number }}</td>
+                                <td>
+                                    {% if booking.service_rel %}
+                                        {{ booking.service_rel.name }}
+                                    {% elif booking.teacher_rel %}
+                                        {{ booking.teacher_rel.name }}
+                                    {% else %}
+                                        Consultation
+                                    {% endif %}
+                                </td>
+                                <td>{{ booking.booking_date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ booking.booking_time }}</td>
+                                <td>${{ "%.2f"|format(booking.amount) }}</td>
+                                <td>
+                                    <span class="badge bg-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'pending' %}warning{% elif booking.status == 'cancelled' %}danger{% else %}secondary{% endif %}">
+                                        {{ booking.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-4">You have no bookings yet.</p>
+                <div class="text-center">
+                    <a href="{{ url_for('teachers_page') }}" class="btn btn-primary" style="background: #002868; border: none; border-radius: 60px;">
+                        Browse Teachers
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

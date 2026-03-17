@@ -1,0 +1,111 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}{% if teacher %}Edit{% else %}Add{% endif %} Teacher - Admin{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">{% if teacher %}Edit{% else %}Add New{% endif %} Teacher</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" {% if teacher %}action="{{ url_for('admin_edit_teacher', teacher_id=teacher.id) }}"{% else %}action="{{ url_for('admin_add_teacher') }}"{% endif %}>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" class="form-control" name="name" value="{{ teacher.name if teacher else '' }}" required>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Department *</label>
+                    <select class="form-control" name="department" required>
+                        <option value="">Select Department</option>
+                        <option value="Math" {% if teacher and teacher.department == 'Math' %}selected{% endif %}>Mathematics</option>
+                        <option value="Physics" {% if teacher and teacher.department == 'Physics' %}selected{% endif %}>Physics</option>
+                        <option value="Data Analytics" {% if teacher and teacher.department == 'Data Analytics' %}selected{% endif %}>Data Analytics</option>
+                        <option value="Research Support" {% if teacher and teacher.department == 'Research Support' %}selected{% endif %}>Research Support</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Subject/Specialization *</label>
+                    <input type="text" class="form-control" name="subject" value="{{ teacher.subject if teacher else '' }}" placeholder="e.g., Quantum Mechanics, Linear Algebra" required>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Initial Rating (0-5)</label>
+                    <input type="number" step="0.1" min="0" max="5" class="form-control" name="rating" value="{{ teacher.rating if teacher else '0.0' }}">
+                </div>
+                
+                <!-- NEW: Photo URL Field -->
+                <div class="col-12 mb-3">
+                    <label class="form-label">Photo URL</label>
+                    <input type="url" class="form-control" name="photo_url" id="photoUrl" value="{{ teacher.photo_url if teacher else '' }}" placeholder="https://example.com/teacher-photo.jpg">
+                    <small class="text-muted">Enter a direct link to the teacher's photo (JPG, PNG, etc.)</small>
+                    {% if teacher and teacher.photo_url %}
+                    <div class="mt-2">
+                        <img src="{{ teacher.photo_url }}" alt="{{ teacher.name }}" style="max-height: 100px; border-radius: 10px;" onerror="this.style.display='none'">
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-12 mb-3">
+                    <label class="form-label">Biography</label>
+                    <textarea class="form-control" name="bio" rows="5">{{ teacher.bio if teacher else '' }}</textarea>
+                </div>
+                
+                <div class="col-12 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="is_active" id="isActive" {% if not teacher or teacher.is_active %}checked{% endif %}>
+                        <label class="form-check-label" for="isActive">
+                            Active (visible on website)
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('admin_teachers') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    {% if teacher %}Update{% else %}Create{% endif %} Teacher
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Live preview of photo URL
+document.addEventListener('DOMContentLoaded', function() {
+    var photoInput = document.getElementById('photoUrl');
+    if (photoInput) {
+        photoInput.addEventListener('input', function(e) {
+            var preview = document.querySelector('.mt-2 img');
+            var url = e.target.value;
+            
+            if (!preview) {
+                var container = document.querySelector('.mt-2');
+                if (!container) {
+                    container = document.createElement('div');
+                    container.className = 'mt-2';
+                    e.target.parentNode.appendChild(container);
+                }
+                preview = document.createElement('img');
+                preview.style.maxHeight = '100px';
+                preview.style.borderRadius = '10px';
+                preview.onerror = function() { this.style.display = 'none'; };
+                container.appendChild(preview);
+            }
+            
+            if (url) {
+                preview.src = url;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

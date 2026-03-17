@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Panel - Afro-Merica{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- jQuery (required for Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Bootstrap 5 JS Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f8fe;
+        }
+        
+        .sidebar {
+            background: #002868;
+            min-height: 100vh;
+            color: white;
+            position: fixed;
+            width: 250px;
+            overflow-y: auto;
+        }
+        
+        .sidebar-logo {
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-logo img {
+            max-height: 60px;
+            max-width: 100%;
+        }
+        
+        .sidebar-logo h5 {
+            color: white;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .sidebar-menu {
+            padding: 1.5rem 0;
+        }
+        
+        .sidebar-menu a {
+            display: block;
+            padding: 0.8rem 2rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: 0.2s;
+            font-size: 0.95rem;
+        }
+        
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left: 4px solid #BF0A30;
+        }
+        
+        .sidebar-menu a i {
+            width: 25px;
+            margin-right: 10px;
+            color: #BF0A30;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+        
+        .top-bar {
+            background: white;
+            border-radius: 60px;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-info .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #eef2f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #002868;
+        }
+        
+        .logout-btn {
+            color: #BF0A30;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .logout-btn:hover {
+            text-decoration: underline;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 30px;
+            box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);
+        }
+        
+        .btn-primary {
+            background: #002868;
+            border: none;
+            border-radius: 60px;
+            padding: 0.5rem 1.5rem;
+        }
+        
+        .btn-primary:hover {
+            background: #1a4c7a;
+        }
+        
+        .btn-danger {
+            background: #BF0A30;
+            border: none;
+            border-radius: 60px;
+            padding: 0.5rem 1.5rem;
+        }
+        
+        .btn-danger:hover {
+            background: #8f0824;
+        }
+        
+        .table th {
+            border-top: none;
+            color: #666;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 60px;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                position: relative;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .top-bar {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <img src="https://github.com/Tesfay-Tesfu/Mella-Technollogy-LLC-Python-Course/blob/main/S11.png?raw=true" 
+                 alt="Logo"
+                 onerror="this.style.display='none'">
+            <h5>Admin Panel</h5>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{{ url_for('admin_teachers') }}" class="{% if request.endpoint in ['admin_teachers', 'admin_add_teacher', 'admin_edit_teacher'] %}active{% endif %}">
+                <i class="fas fa-chalkboard-teacher"></i> Teachers
+            </a>
+            <a href="{{ url_for('admin_services') }}" class="{% if request.endpoint in ['admin_services', 'admin_add_service', 'admin_edit_service'] %}active{% endif %}">
+                <i class="fas fa-cube"></i> Services
+            </a>
+            <a href="{{ url_for('admin_bookings') }}" class="{% if request.endpoint in ['admin_bookings', 'admin_booking_detail'] %}active{% endif %}">
+                <i class="fas fa-calendar-check"></i> Bookings
+            </a>
+            <a href="{{ url_for('admin_reviews') }}" class="{% if request.endpoint == 'admin_reviews' %}active{% endif %}">
+                <i class="fas fa-star"></i> Reviews
+            </a>
+            <a href="{{ url_for('admin_time_blocks') }}" class="{% if request.endpoint == 'admin_time_blocks' %}active{% endif %}">
+                <i class="fas fa-clock"></i> Time Blocks
+            </a>
+            <!-- NEW SETTINGS LINK -->
+            <a href="{{ url_for('admin_settings') }}" class="{% if request.endpoint == 'admin_settings' %}active{% endif %}">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 1rem 0;">
+            <a href="{{ url_for('index') }}" target="_blank">
+                <i class="fas fa-globe"></i> View Website
+            </a>
+            <a href="{{ url_for('admin_logout') }}">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-bar">
+            <h5 class="mb-0">Welcome, {{ session.get('admin_username', 'Admin') }}</h5>
+            <div class="user-info">
+                <span class="avatar">
+                    <i class="fas fa-user"></i>
+                </span>
+                <a href="{{ url_for('admin_logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% elif category == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Content -->
+        {% block content %}{% endblock %}
+    </div>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

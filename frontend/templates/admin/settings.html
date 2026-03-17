@@ -1,0 +1,217 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Website Settings - Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Website Settings</h1>
+</div>
+
+<ul class="nav nav-tabs mb-4" id="settingsTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="header-tab" data-bs-toggle="tab" data-bs-target="#header" type="button" role="tab">Header Settings</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="footer-tab" data-bs-toggle="tab" data-bs-target="#footer" type="button" role="tab">Footer Settings</button>
+    </li>
+</ul>
+
+<form method="POST" action="{{ url_for('admin_update_settings') }}">
+    <div class="tab-content" id="settingsTabsContent">
+        <!-- Header Settings Tab -->
+        <div class="tab-pane fade show active" id="header" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Header Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Site Name</label>
+                            <input type="text" class="form-control" name="site_name" value="{{ settings.get('site_name', {}).value if settings.get('site_name') else 'AFRO‑MERICA' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Site Tagline</label>
+                            <input type="text" class="form-control" name="site_tagline" value="{{ settings.get('site_tagline', {}).value if settings.get('site_tagline') else 'Math · Physics · Data · Dev · Research' }}">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Logo URL</label>
+                            <input type="url" class="form-control" name="logo_url" value="{{ settings.get('logo_url', {}).value if settings.get('logo_url') else 'https://github.com/Tesfay-Tesfu/Mella-Technollogy-LLC-Python-Course/blob/main/Gere_Logo2.png?raw=true' }}">
+                            <small class="text-muted">Enter the URL of your logo image</small>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <h6 class="mb-3">Navigation Menu Links</h6>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>URL</th>
+                                    <th>Icon Class</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set nav_setting = settings.get('nav_links') %}
+                                {% set nav_links = nav_setting.value|from_json if nav_setting else [
+                                    {'name': 'Home', 'url': '/', 'icon': 'fas fa-home'},
+                                    {'name': 'Teachers', 'url': '/teachers', 'icon': 'fas fa-chalkboard-teacher'},
+                                    {'name': 'Math & Physics', 'url': '/tutorials', 'icon': 'fas fa-calculator'},
+                                    {'name': 'Data Analytics', 'url': '/data-analytics', 'icon': 'fas fa-chart-line'},
+                                    {'name': 'Research', 'url': '/research-support', 'icon': 'fas fa-microscope'},
+                                    {'name': 'Web Dev', 'url': '/web-development', 'icon': 'fas fa-code'}
+                                ] %}
+                                {% for i in range(1, 7) %}
+                                <tr>
+                                    <td>{{ i }}</td>
+                                    <td><input type="text" class="form-control" name="nav_{{ i }}_name" value="{{ nav_links[i-1].name if nav_links and nav_links|length >= i else '' }}"></td>
+                                    <td><input type="text" class="form-control" name="nav_{{ i }}_url" value="{{ nav_links[i-1].url if nav_links and nav_links|length >= i else '' }}"></td>
+                                    <td><input type="text" class="form-control" name="nav_{{ i }}_icon" value="{{ nav_links[i-1].icon if nav_links and nav_links|length >= i else 'fas fa-link' }}"></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <hr>
+                    <h6 class="mb-3">Portfolio Badge Links</h6>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>URL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set portfolio_setting = settings.get('portfolio_links') %}
+                                {% set portfolio_links = portfolio_setting.value|from_json if portfolio_setting else [
+                                    {'name': 'ezana.onrender', 'url': 'https://ezana.onrender.com'},
+                                    {'name': 'ybbeauties', 'url': 'https://ybbeauties.onrender.com'},
+                                    {'name': 'lakesideecl', 'url': 'http://www.lakesideecl.com'}
+                                ] %}
+                                {% for i in range(1, 4) %}
+                                <tr>
+                                    <td>{{ i }}</td>
+                                    <td><input type="text" class="form-control" name="portfolio_{{ i }}_name" value="{{ portfolio_links[i-1].name if portfolio_links and portfolio_links|length >= i else '' }}"></td>
+                                    <td><input type="text" class="form-control" name="portfolio_{{ i }}_url" value="{{ portfolio_links[i-1].url if portfolio_links and portfolio_links|length >= i else '' }}"></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer Settings Tab -->
+        <div class="tab-pane fade" id="footer" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Footer Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Footer Description</label>
+                        <textarea class="form-control" name="footer_description" rows="3">{{ settings.get('footer_description', {}).value if settings.get('footer_description') else 'Empowering students through quality education in Mathematics, Physics, Data Analytics, Website Development, and Research Support.' }}</textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="footer_email" value="{{ settings.get('footer_email', {}).value if settings.get('footer_email') else 'info@afro-merica.org' }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" class="form-control" name="footer_phone" value="{{ settings.get('footer_phone', {}).value if settings.get('footer_phone') else '+1 (555) 123-4567' }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Address</label>
+                            <input type="text" class="form-control" name="footer_address" value="{{ settings.get('footer_address', {}).value if settings.get('footer_address') else 'Addis Ababa, Ethiopia' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Copyright Text</label>
+                        <input type="text" class="form-control" name="copyright_text" value="{{ settings.get('copyright_text', {}).value if settings.get('copyright_text') else '© 2026 Afro-Merica Tutorial & Trainings – All rights reserved' }}">
+                    </div>
+
+                    <!-- ===== ADD FOOTER BACKGROUND COLOR HERE ===== -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Footer Background Color</label>
+                            <input type="color" class="form-control form-control-color" name="footer_bg_color" value="{{ settings.get('footer_bg_color', {}).value if settings.get('footer_bg_color') else '#1a2c3e' }}" style="height: 50px; width: 100%;">
+                            <small class="text-muted">Choose a color for the footer background</small>
+                        </div>
+                    </div>
+                    <!-- ===== END OF FOOTER BACKGROUND COLOR ===== -->
+                    
+                    <hr>
+                    <h6 class="mb-3">Social Media Links</h6>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Facebook URL</label>
+                            <input type="url" class="form-control" name="facebook_url" value="{{ settings.get('facebook_url', {}).value if settings.get('facebook_url') else '#' }}">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Twitter URL</label>
+                            <input type="url" class="form-control" name="twitter_url" value="{{ settings.get('twitter_url', {}).value if settings.get('twitter_url') else '#' }}">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">LinkedIn URL</label>
+                            <input type="url" class="form-control" name="linkedin_url" value="{{ settings.get('linkedin_url', {}).value if settings.get('linkedin_url') else '#' }}">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Instagram URL</label>
+                            <input type="url" class="form-control" name="instagram_url" value="{{ settings.get('instagram_url', {}).value if settings.get('instagram_url') else '#' }}">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">GitHub URL</label>
+                            <input type="url" class="form-control" name="github_url" value="{{ settings.get('github_url', {}).value if settings.get('github_url') else '#' }}">
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <h6 class="mb-3">Footer Quick Links</h6>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>URL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set footer_links_setting = settings.get('footer_links') %}
+                                {% set footer_links = footer_links_setting.value|from_json if footer_links_setting else [
+                                    {'name': 'Home', 'url': '/'},
+                                    {'name': 'Teachers', 'url': '/teachers'},
+                                    {'name': 'Math & Physics', 'url': '/tutorials'},
+                                    {'name': 'Data Analytics', 'url': '/data-analytics'},
+                                    {'name': 'Research Support', 'url': '/research-support'},
+                                    {'name': 'Web Development', 'url': '/web-development'}
+                                ] %}
+                                {% for i in range(1, 7) %}
+                                <tr>
+                                    <td>{{ i }}</td>
+                                    <td><input type="text" class="form-control" name="footer_link_{{ i }}_name" value="{{ footer_links[i-1].name if footer_links and footer_links|length >= i else '' }}"></td>
+                                    <td><input type="text" class="form-control" name="footer_link_{{ i }}_url" value="{{ footer_links[i-1].url if footer_links and footer_links|length >= i else '' }}"></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Save All Settings</button>
+    </div>
+</form>
+{% endblock %}

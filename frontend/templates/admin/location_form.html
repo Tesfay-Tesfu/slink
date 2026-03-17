@@ -1,0 +1,91 @@
+
+
+{% extends "admin/base_admin.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4">{{ 'Edit' if location else 'Add' }} Location</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Name *</label>
+                            <input type="text" name="name" class="form-control" value="{{ location.name if location else 'Main Office' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Address *</label>
+                            <input type="text" name="address" class="form-control" value="{{ location.address if location else '' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">City *</label>
+                            <input type="text" name="city" class="form-control" value="{{ location.city if location else '' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">State/Country *</label>
+                            <input type="text" name="country" class="form-control" value="{{ location.country if location else 'USA' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Postal Code</label>
+                            <input type="text" name="postal_code" class="form-control" value="{{ location.postal_code if location else '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Phone *</label>
+                            <input type="text" name="phone" class="form-control" value="{{ location.phone if location else '+13019961201' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Email *</label>
+                            <input type="email" name="email" class="form-control" value="{{ location.email if location else 'info@soli-microlink.com' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Latitude</label>
+                            <input type="number" step="any" name="latitude" class="form-control" value="{{ location.latitude if location else '' }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Longitude</label>
+                            <input type="number" step="any" name="longitude" class="form-control" value="{{ location.longitude if location else '' }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Google Maps Embed URL</label>
+                            <input type="text" name="map_embed_url" class="form-control" value="{{ location.map_embed_url if location else '' }}">
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" name="is_primary" class="form-check-input" id="isPrimary" {% if not location or location.is_primary %}checked{% endif %}>
+                            <label class="form-check-label" for="isPrimary">Primary Location</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <h4 class="mt-4">Business Hours</h4>
+                <div class="row">
+                    {% for day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] %}
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">{{ day|title }}</label>
+                        <input type="text" name="hours_{{ day }}" class="form-control" 
+                               value="{% if hours %}{{ hours.get(day, '') }}{% elif location and location.hours %}{{ location.hours|from_json.get(day, '') }}{% endif %}"
+                               placeholder="e.g., 9:00 AM - 6:00 PM">
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{{ url_for('admin_locations') }}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

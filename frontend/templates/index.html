@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}SOLI MICROLINK - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Slider Section -->
+<div class="hero-swiper swiper" data-aos="fade-up">
+    <div class="swiper-wrapper">
+        <!-- Slide 1 - Data Analytics -->
+        <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop');">
+            <div class="hero-content">
+                <h2 data-aos="fade-right" data-aos-delay="200">Master Data Analytics</h2>
+                <p data-aos="fade-right" data-aos-delay="400">Python, MATLAB, R, and SQL training with real-world projects</p>
+                <a href="{{ url_for('data_analytics_page') }}" class="btn" data-aos="fade-right" data-aos-delay="600">
+                    Start Learning <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Slide 2 - Research Support -->
+        <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=2070&auto=format&fit=crop');">
+            <div class="hero-content">
+                <h2 data-aos="fade-right" data-aos-delay="200">Research Excellence</h2>
+                <p data-aos="fade-right" data-aos-delay="400">Comprehensive support for thesis, papers, and academic writing</p>
+                <a href="{{ url_for('research_support_page') }}" class="btn" data-aos="fade-right" data-aos-delay="600">
+                    Get Support <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Slide 3 - Expert Teachers -->
+        <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop');">
+            <div class="hero-content">
+                <h2 data-aos="fade-right" data-aos-delay="200">Learn from Experts</h2>
+                <p data-aos="fade-right" data-aos-delay="400">PhD-level instructors with years of teaching and industry experience</p>
+                <a href="{{ url_for('teachers_page') }}" class="btn" data-aos="fade-right" data-aos-delay="600">
+                    Meet Teachers <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Pagination -->
+    <div class="swiper-pagination"></div>
+    
+    <!-- Add Navigation -->
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+</div>
+
+<!-- Stats Section -->
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin: 4rem 0;">
+    <div class="stat-card" style="text-align: center; background: white; padding: 2rem; border-radius: 30px; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+        <i class="fas fa-users" style="font-size: 2.5rem; color: #4169E1;"></i>
+        <h3 style="font-size: 2rem; margin: 1rem 0;">24+</h3>
+        <p>Expert Teachers</p>
+    </div>
+    <div class="stat-card" style="text-align: center; background: white; padding: 2rem; border-radius: 30px; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+        <i class="fas fa-book-open" style="font-size: 2.5rem; color: #4169E1;"></i>
+        <h3 style="font-size: 2rem; margin: 1rem 0;">30+</h3>
+        <p>Courses</p>
+    </div>
+    <div class="stat-card" style="text-align: center; background: white; padding: 2rem; border-radius: 30px; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+        <i class="fas fa-star" style="font-size: 2.5rem; color: #4169E1;"></i>
+        <h3 style="font-size: 2rem; margin: 1rem 0;">4.9</h3>
+        <p>Average Rating</p>
+    </div>
+    <div class="stat-card" style="text-align: center; background: white; padding: 2rem; border-radius: 30px; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+        <i class="fas fa-globe-africa" style="font-size: 2.5rem; color: #4169E1;"></i>
+        <h3 style="font-size: 2rem; margin: 1rem 0;">10+</h3>
+        <p>Countries</p>
+    </div>
+</div>
+
+<!-- Services Overview - 6 SERVICES -->
+<div style="margin: 5rem 0;">
+    <h2 style="font-size: 2.5rem; text-align: center; margin-bottom: 3rem; color: #002868;">Our Services</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+        <!-- Data Analytics -->
+        <div class="service-card" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop" alt="Data Analytics" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 1.5rem;">
+                <i class="fas fa-chart-line" style="font-size: 2rem; color: #4169E1; margin-bottom: 1rem; display: block;"></i>
+                <h3 style="color: #002868;">Data Analytics</h3>
+                <p>Python, MATLAB, R, SQL training with real-world projects and industry experts.</p>
+                <a href="{{ url_for('data_analytics_page') }}" style="color: #4169E1; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 1rem;">Learn More →</a>
+            </div>
+        </div>
+        
+        <!-- Research Support -->
+        <div class="service-card" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+            <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=2070&auto=format&fit=crop" alt="Research Support" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 1.5rem;">
+                <i class="fas fa-microscope" style="font-size: 2rem; color: #4169E1; margin-bottom: 1rem; display: block;"></i>
+                <h3 style="color: #002868;">Research Support</h3>
+                <p>Thesis writing, methodology, literature review, and academic publishing assistance.</p>
+                <a href="{{ url_for('research_support_page') }}" style="color: #4169E1; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 1rem;">Learn More →</a>
+            </div>
+        </div>
+        
+        <!-- Expert Teachers -->
+        <div class="service-card" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+            <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop" alt="Expert Teachers" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 1.5rem;">
+                <i class="fas fa-chalkboard-teacher" style="font-size: 2rem; color: #4169E1; margin-bottom: 1rem; display: block;"></i>
+                <h3 style="color: #002868;">Expert Teachers</h3>
+                <p>Learn from PhDs and industry professionals with years of experience in their fields.</p>
+                <a href="{{ url_for('teachers_page') }}" style="color: #4169E1; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 1rem;">Learn More →</a>
+            </div>
+        </div>
+        
+        <!-- AI & Machine Learning -->
+        <div class="service-card" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+            <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80" alt="AI & Machine Learning" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 1.5rem;">
+                <i class="fas fa-robot" style="font-size: 2rem; color: #4169E1; margin-bottom: 1rem; display: block;"></i>
+                <h3 style="color: #002868;">AI & Machine Learning</h3>
+                <p>Master cutting-edge AI technologies including prompt engineering, generative AI, deep learning, and MLOps with hands-on projects.</p>
+                <a href="{{ url_for('training_ai_ml') }}" style="color: #4169E1; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 1rem;">Learn More →</a>
+            </div>
+        </div>
+
+        <!-- Microsoft Power Platform -->
+        <div class="service-card" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+            <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=1200&q=80" alt="Microsoft Power Platform" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 1.5rem;">
+                <i class="fab fa-microsoft" style="font-size: 2rem; color: #4169E1; margin-bottom: 1rem; display: block;"></i>
+                <h3 style="color: #002868;">Microsoft Power Platform</h3>
+                <p>Build powerful business applications with SharePoint, Power Automate, Power Apps, Power BI, and Dataverse.</p>
+                <a href="{{ url_for('training_power_platform') }}" style="color: #4169E1; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 1rem;">Learn More →</a>
+            </div>
+        </div>
+
+        <!-- Cybersecurity -->
+        <div class="service-card" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80" alt="Cybersecurity" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 1.5rem;">
+                <i class="fas fa-shield-alt" style="font-size: 2rem; color: #4169E1; margin-bottom: 1rem; display: block;"></i>
+                <h3 style="color: #002868;">Cybersecurity</h3>
+                <p>Protect digital systems and networks with comprehensive training in network security, ethical hacking, cryptography, and incident response.</p>
+                <a href="{{ url_for('training_cybersecurity') }}" style="color: #4169E1; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 1rem;">Learn More →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Testimonials Section -->
+<div style="margin: 5rem 0; background: white; border-radius: 60px; padding: 4rem; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+    <h2 style="font-size: 2.5rem; text-align: center; margin-bottom: 3rem; color: #002868;">What Our Students Say</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem;">
+        <div style="background: #f4f8fe; border-radius: 30px; padding: 2rem;">
+            <i class="fas fa-quote-left" style="font-size: 2rem; color: #4169E1; opacity: 0.3;"></i>
+            <p style="font-style: italic; margin: 1rem 0;">"The data analytics bootcamp was exactly what I needed to switch careers. Now I'm working as a data analyst!"</p>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 50px; height: 50px; border-radius: 50%; background: #002868; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">JS</div>
+                <div>
+                    <strong>Jane Smith</strong>
+                    <div style="color: #f2b341;">★★★★★</div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="background: #f4f8fe; border-radius: 30px; padding: 2rem;">
+            <i class="fas fa-quote-left" style="font-size: 2rem; color: #4169E1; opacity: 0.3;"></i>
+            <p style="font-style: italic; margin: 1rem 0;">"The research support team helped me complete my thesis on time. Their expertise in methodology was invaluable."</p>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 50px; height: 50px; border-radius: 50%; background: #002868; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">MR</div>
+                <div>
+                    <strong>Michael Roberts</strong>
+                    <div style="color: #f2b341;">★★★★★</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div style="background: linear-gradient(135deg, #002868, #1a4c7a); color: white; border-radius: 60px; padding: 4rem; text-align: center; margin: 5rem 0;">
+    <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Ready to Start Your Learning Journey?</h2>
+    <p style="font-size: 1.2rem; margin-bottom: 2rem;">Book a session with our expert teachers today.</p>
+    <a href="{{ url_for('teachers_page') }}" style="background: #4169E1; color: white; padding: 1rem 3rem; border-radius: 60px; text-decoration: none; font-weight: 600; font-size: 1.2rem; display: inline-block; transition: all 0.3s ease;">
+        Get Started Now <i class="fas fa-arrow-right"></i>
+    </a>
+</div>
+
+<!-- Initialize Swiper -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const swiper = new Swiper('.hero-swiper', {
+        loop: true,
+        autoplay: { delay: 5000 },
+        pagination: { el: '.swiper-pagination', clickable: true },
+        navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+        effect: 'fade',
+        speed: 1000,
+    });
+});
+</script>
+
+<style>
+    .service-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 40px -10px rgba(0,40,104,0.2);
+    }
+    .stat-card {
+        transition: transform 0.3s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
