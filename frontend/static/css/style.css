@@ -1,0 +1,27 @@
+/* Custom styles for SOLI MICROLINK */
+
+/* Additional styles not covered in base.html */
+
+.service-card {
+    transition: transform 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+}
+
+.btn-custom {
+    border-radius: 60px;
+    padding: 0.8rem 2rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+    
+    .container {
+        padding: 0 1rem;
+    }
+}
