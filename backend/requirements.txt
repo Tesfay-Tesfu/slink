@@ -7,5 +7,4 @@ stripe==7.5.0
 gunicorn==21.2.0
 Werkzeug==2.3.7
 SQLAlchemy==2.0.23
-Flask-Migrate==4.0.5
 pytz==2023.3

@@ -21,11 +21,6 @@ services:
         sync: false
       - key: ADMIN_EMAIL
         value: tesfaymn402@gmail.com
-      - key: BASE_URL
-        fromService:
-          name: soli-microlink
-          type: web
-          property: url
 
 databases:
   - name: soli-microlink-db
