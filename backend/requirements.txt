@@ -8,3 +8,4 @@ python-dotenv
 psycopg2-binary
 gunicorn==21.2.0
 Werkzeug==2.3.0
+gunicorn==21.2.0
