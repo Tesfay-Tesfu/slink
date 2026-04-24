@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}{{ service.name }} - SOLI MICROLINK{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card" style="border-radius: 30px; border: none; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1); overflow: hidden;">
+                {% if service.image_url %}
+                <img src="{{ service.image_url }}" class="card-img-top" alt="{{ service.name }}" style="height: 300px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body p-4">
+                    <h1 class="card-title" style="color: #002868;">{{ service.name }}</h1>
+                    
+                    <!-- Rating - FIXED for None values -->
+                    <div class="rating mb-3">
+                        {% set rating = service.rating if service.rating is not none else 0 %}
+                        {% for i in range(5) %}
+                            {% if i < rating|int %}
+                                <i class="fas fa-star" style="color: #f2b341;"></i>
+                            {% elif i < rating|round(0, 'ceil') and rating % 1 >= 0.5 %}
+                                <i class="fas fa-star-half-alt" style="color: #f2b341;"></i>
+                            {% else %}
+                                <i class="far fa-star" style="color: #f2b341;"></i>
+                            {% endif %}
+                        {% endfor %}
+                        <span class="ms-2 text-muted">({{ service.reviews_count or 0 }} reviews)</span>
+                    </div>
+                    
+                    <p class="card-text" style="font-size: 1.1rem; line-height: 1.8;">{{ service.description }}</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="p-3" style="background: #f8f9fa; border-radius: 20px;">
+                                <h5><i class="fas fa-clock" style="color: #4169E1;"></i> Duration</h5>
+                                <p>{{ service.duration_hours }} hours</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3" style="background: #f8f9fa; border-radius: 20px;">
+                                <h5><i class="fas fa-tag" style="color: #4169E1;"></i> Price</h5>
+                                {% if service.discounted_price %}
+                                <p><span style="text-decoration: line-through;">${{ service.price }}</span> <strong class="text-danger">${{ service.discounted_price }}</strong></p>
+                                {% else %}
+                                <p><strong>${{ service.price }}</strong></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if service.features %}
+                    <div class="mt-4">
+                        <h3 style="color: #002868;">What You'll Learn</h3>
+                        <ul class="list-unstyled mt-3">
+                            {% set features = service.features|from_json %}
+                            {% for feature in features %}
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #4169E1; margin-right: 10px;"></i> {{ feature }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-4 d-flex gap-3">
+                        <button class="btn btn-primary book-now-btn" data-service-id="{{ service.id }}" style="background: #BF0A30; border: none; border-radius: 60px; padding: 0.8rem 2rem;">
+                            <i class="fas fa-calendar-check"></i> Book Now
+                        </button>
+                        <button class="btn btn-outline-primary add-to-cart-btn" data-service-id="{{ service.id }}" style="border-radius: 60px; padding: 0.8rem 2rem;">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelector('.book-now-btn')?.addEventListener('click', function() {
+    var serviceId = this.dataset.serviceId;
+    var tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    var tomorrowStr = tomorrow.toISOString().split('T')[0];
+    
+    fetch('/add-to-cart', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({
+            item_type: 'service',
+            item_id: serviceId,
+            booking_date: tomorrowStr,
+            booking_time: '09:00'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Added to cart! Please complete checkout.');
+            window.location.href = '/checkout';
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => alert('Error adding to cart'));
+});
+
+document.querySelector('.add-to-cart-btn')?.addEventListener('click', function() {
+    var serviceId = this.dataset.serviceId;
+    
+    fetch('/add-to-cart', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: new URLSearchParams({
+            item_type: 'service',
+            item_id: serviceId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Added to cart!');
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => alert('Error adding to cart'));
+});
+</script>
+{% endblock %}

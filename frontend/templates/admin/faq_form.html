@@ -1,0 +1,47 @@
+
+{% extends "admin/base_admin.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4">{{ 'Edit' if faq else 'Add' }} FAQ</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Question *</label>
+                    <input type="text" name="question" class="form-control" value="{{ faq.question if faq else '' }}" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Answer *</label>
+                    <textarea name="answer" class="form-control" rows="5" required>{{ faq.answer if faq else '' }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Category</label>
+                    <select name="category" class="form-control">
+                        <option value="general" {% if faq and faq.category == 'general' %}selected{% endif %}>General</option>
+                        <option value="booking" {% if faq and faq.category == 'booking' %}selected{% endif %}>Booking</option>
+                        <option value="payment" {% if faq and faq.category == 'payment' %}selected{% endif %}>Payment</option>
+                        <option value="technical" {% if faq and faq.category == 'technical' %}selected{% endif %}>Technical</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Order</label>
+                    <input type="number" name="order" class="form-control" value="{{ faq.order if faq else 0 }}">
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input type="checkbox" name="is_active" class="form-check-input" id="isActive" {% if not faq or faq.is_active %}checked{% endif %}>
+                    <label class="form-check-label" for="isActive">Active</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{{ url_for('admin_faqs') }}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

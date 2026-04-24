@@ -1,0 +1,746 @@
+{% extends "base.html" %}
+
+{% block title %}SOLI MICROLINK - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Slider Section -->
+<div class="hero-swiper swiper" data-aos="fade-up">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop');">
+            <div class="hero-content">
+                <h2 data-aos="fade-right" data-aos-delay="200">Master Data Analytics</h2>
+                <p data-aos="fade-right" data-aos-delay="400">Python, MATLAB, R, and SQL training with real-world projects</p>
+                <a href="{{ url_for('data_analytics_page') }}" class="btn" data-aos="fade-right" data-aos-delay="600">
+                    Start Learning <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        
+        <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=2070&auto=format&fit=crop');">
+            <div class="hero-content">
+                <h2 data-aos="fade-right" data-aos-delay="200">Research Excellence</h2>
+                <p data-aos="fade-right" data-aos-delay="400">Comprehensive support for thesis, papers, and academic writing</p>
+                <a href="{{ url_for('research_support_page') }}" class="btn" data-aos="fade-right" data-aos-delay="600">
+                    Get Support <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        
+        <div class="swiper-slide" style="background-image: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop');">
+            <div class="hero-content">
+                <h2 data-aos="fade-right" data-aos-delay="200">Learn from Experts</h2>
+                <p data-aos="fade-right" data-aos-delay="400">PhD-level instructors with years of teaching and industry experience</p>
+                <a href="{{ url_for('teachers_page') }}" class="btn" data-aos="fade-right" data-aos-delay="600">
+                    Meet Teachers <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="swiper-pagination"></div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+</div>
+
+<!-- Stats Section -->
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin: 4rem 0;">
+    <div class="stat-card" style="text-align: center; background: white; padding: 2rem; border-radius: 30px; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+        <i class="fas fa-users" style="font-size: 2.5rem; color: #4169E1;"></i>
+        <h3 style="font-size: 2rem; margin: 1rem 0;">24+</h3>
+        <p>Expert Teachers</p>
+    </div>
+    <div class="stat-card" style="text-align: center; background: white; padding: 2rem; border-radius: 30px; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+        <i class="fas fa-book-open" style="font-size: 2.5rem; color: #4169E1;"></i>
+        <h3 style="font-size: 2rem; margin: 1rem 0;">30+</h3>
+        <p>Courses</p>
+    </div>
+    <div class="stat-card" style="text-align: center; background: white; padding: 2rem; border-radius: 30px; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+        <i class="fas fa-star" style="font-size: 2.5rem; color: #4169E1;"></i>
+        <h3 style="font-size: 2rem; margin: 1rem 0;">4.9</h3>
+        <p>Average Rating</p>
+    </div>
+    <div class="stat-card" style="text-align: center; background: white; padding: 2rem; border-radius: 30px; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1);">
+        <i class="fas fa-globe-africa" style="font-size: 2.5rem; color: #4169E1;"></i>
+        <h3 style="font-size: 2rem; margin: 1rem 0;">10+</h3>
+        <p>Countries</p>
+    </div>
+</div>
+
+<!-- Services Overview -->
+<div style="margin: 5rem 0;">
+    <h2 style="font-size: 2.5rem; text-align: center; margin-bottom: 3rem; color: #002868;">Our Services</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+        <!-- AI & Machine Learning -->
+        <div class="service-card" data-service="ai-ml" data-url="{{ url_for('training_ai_ml') }}" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1); position: relative;">
+            <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80" alt="AI & Machine Learning" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 1.5rem;">
+                <i class="fas fa-robot" style="font-size: 2rem; color: #4169E1; margin-bottom: 1rem; display: block;"></i>
+                <h3 style="color: #002868;">AI & Machine Learning</h3>
+                <p>Master cutting-edge AI technologies including prompt engineering, generative AI, deep learning, and MLOps.</p>
+                <button class="description-btn" data-service="ai-ml" style="background: #002868; color: white; border: none; border-radius: 60px; padding: 0.8rem 1.5rem; margin-top: 1rem; cursor: pointer; width: 100%; font-weight: 600;">📖 Full Description</button>
+                <a href="{{ url_for('training_ai_ml') }}" class="learn-more-link" style="color: #4169E1; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 0.5rem; text-align: center; width: 100%;">Learn More →</a>
+            </div>
+            <div class="overlay-popup">
+                <h4>🤖 AI & Machine Learning</h4>
+                <ul>
+                    <li>✓ Python for AI/ML (TensorFlow, PyTorch)</li>
+                    <li>✓ Deep Learning & Neural Networks</li>
+                    <li>✓ Natural Language Processing</li>
+                    <li>✓ Generative AI & Prompt Engineering</li>
+                </ul>
+                <button class="overlay-desc-btn" data-service="ai-ml">📖 Read Full Description</button>
+                <a href="{{ url_for('training_ai_ml') }}" class="overlay-learn-more">Learn More →</a>
+            </div>
+        </div>
+
+        <!-- Microsoft Power Platform -->
+        <div class="service-card" data-service="power-platform" data-url="{{ url_for('training_power_platform') }}" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1); position: relative;">
+            <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=1200&q=80" alt="Microsoft Power Platform" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 1.5rem;">
+                <i class="fab fa-microsoft" style="font-size: 2rem; color: #4169E1; margin-bottom: 1rem; display: block;"></i>
+                <h3 style="color: #002868;">Microsoft Power Platform</h3>
+                <p>Build powerful business applications with SharePoint, Power Automate, Power Apps, Power BI, and Dataverse.</p>
+                <button class="description-btn" data-service="power-platform" style="background: #002868; color: white; border: none; border-radius: 60px; padding: 0.8rem 1.5rem; margin-top: 1rem; cursor: pointer; width: 100%; font-weight: 600;">📖 Full Description</button>
+                <a href="{{ url_for('training_power_platform') }}" class="learn-more-link" style="color: #4169E1; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 0.5rem; text-align: center; width: 100%;">Learn More →</a>
+            </div>
+            <div class="overlay-popup">
+                <h4>⚙️ Microsoft Power Platform</h4>
+                <ul>
+                    <li>✓ Power Apps Development</li>
+                    <li>✓ Power Automate Workflows</li>
+                    <li>✓ Power BI Analytics</li>
+                    <li>✓ SharePoint & Dataverse Integration</li>
+                </ul>
+                <button class="overlay-desc-btn" data-service="power-platform">📖 Read Full Description</button>
+                <a href="{{ url_for('training_power_platform') }}" class="overlay-learn-more">Learn More →</a>
+            </div>
+        </div>
+
+        <!-- Cybersecurity -->
+        <div class="service-card" data-service="cybersecurity" data-url="{{ url_for('training_cybersecurity') }}" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1); position: relative;">
+            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80" alt="Cybersecurity" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 1.5rem;">
+                <i class="fas fa-shield-alt" style="font-size: 2rem; color: #4169E1; margin-bottom: 1rem; display: block;"></i>
+                <h3 style="color: #002868;">Cybersecurity</h3>
+                <p>Protect digital systems with training in network security, ethical hacking, cryptography, and incident response.</p>
+                <button class="description-btn" data-service="cybersecurity" style="background: #002868; color: white; border: none; border-radius: 60px; padding: 0.8rem 1.5rem; margin-top: 1rem; cursor: pointer; width: 100%; font-weight: 600;">📖 Full Description</button>
+                <a href="{{ url_for('training_cybersecurity') }}" class="learn-more-link" style="color: #4169E1; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 0.5rem; text-align: center; width: 100%;">Learn More →</a>
+            </div>
+            <div class="overlay-popup">
+                <h4>🔒 Cybersecurity</h4>
+                <ul>
+                    <li>✓ Network Security Fundamentals</li>
+                    <li>✓ Ethical Hacking Techniques</li>
+                    <li>✓ Cryptography & Encryption</li>
+                    <li>✓ Incident Response & Auditing</li>
+                </ul>
+                <button class="overlay-desc-btn" data-service="cybersecurity">📖 Read Full Description</button>
+                <a href="{{ url_for('training_cybersecurity') }}" class="overlay-learn-more">Learn More →</a>
+            </div>
+        </div>
+
+        <!-- Data Analytics -->
+        <div class="service-card" data-service="data-analytics" data-url="{{ url_for('data_analytics_page') }}" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1); position: relative;">
+            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop" alt="Data Analytics" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 1.5rem;">
+                <i class="fas fa-chart-line" style="font-size: 2rem; color: #4169E1; margin-bottom: 1rem; display: block;"></i>
+                <h3 style="color: #002868;">Data Analytics</h3>
+                <p>Python, MATLAB, R, SQL training with real-world projects and industry experts.</p>
+                <button class="description-btn" data-service="data-analytics" style="background: #002868; color: white; border: none; border-radius: 60px; padding: 0.8rem 1.5rem; margin-top: 1rem; cursor: pointer; width: 100%; font-weight: 600;">📖 Full Description</button>
+                <a href="{{ url_for('data_analytics_page') }}" class="learn-more-link" style="color: #4169E1; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 0.5rem; text-align: center; width: 100%;">Learn More →</a>
+            </div>
+            <div class="overlay-popup">
+                <h4>📊 Data Analytics</h4>
+                <ul>
+                    <li>✓ Python for Data Science</li>
+                    <li>✓ MATLAB for Numerical Computing</li>
+                    <li>✓ R for Statistical Analysis</li>
+                    <li>✓ SQL for Database Management</li>
+                </ul>
+                <button class="overlay-desc-btn" data-service="data-analytics">📖 Read Full Description</button>
+                <a href="{{ url_for('data_analytics_page') }}" class="overlay-learn-more">Learn More →</a>
+            </div>
+        </div>
+        
+        <!-- Expert Teachers -->
+        <div class="service-card" data-service="teachers" data-url="{{ url_for('teachers_page') }}" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1); position: relative;">
+            <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop" alt="Expert Teachers" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 1.5rem;">
+                <i class="fas fa-chalkboard-teacher" style="font-size: 2rem; color: #4169E1; margin-bottom: 1rem; display: block;"></i>
+                <h3 style="color: #002868;">Expert Teachers</h3>
+                <p>Learn from PhDs and industry professionals with years of experience in their fields.</p>
+                <button class="description-btn" data-service="teachers" style="background: #002868; color: white; border: none; border-radius: 60px; padding: 0.8rem 1.5rem; margin-top: 1rem; cursor: pointer; width: 100%; font-weight: 600;">📖 Full Description</button>
+                <a href="{{ url_for('teachers_page') }}" class="learn-more-link" style="color: #4169E1; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 0.5rem; text-align: center; width: 100%;">Learn More →</a>
+            </div>
+            <div class="overlay-popup">
+                <h4>👨‍🏫 Expert Teachers</h4>
+                <ul>
+                    <li>✓ One-on-One Mentoring</li>
+                    <li>✓ PhD-level Instructors</li>
+                    <li>✓ Industry Expert Guidance</li>
+                    <li>✓ Career Development Support</li>
+                </ul>
+                <button class="overlay-desc-btn" data-service="teachers">📖 Read Full Description</button>
+                <a href="{{ url_for('teachers_page') }}" class="overlay-learn-more">Learn More →</a>
+            </div>
+        </div>
+        
+        <!-- Research Support -->
+        <div class="service-card" data-service="research" data-url="{{ url_for('research_support_page') }}" style="background: white; border-radius: 30px; overflow: hidden; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1); position: relative;">
+            <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=2070&auto=format&fit=crop" alt="Research Support" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 1.5rem;">
+                <i class="fas fa-microscope" style="font-size: 2rem; color: #4169E1; margin-bottom: 1rem; display: block;"></i>
+                <h3 style="color: #002868;">Research Support</h3>
+                <p>Thesis writing, methodology, literature review, and academic publishing assistance.</p>
+                <button class="description-btn" data-service="research" style="background: #002868; color: white; border: none; border-radius: 60px; padding: 0.8rem 1.5rem; margin-top: 1rem; cursor: pointer; width: 100%; font-weight: 600;">📖 Full Description</button>
+                <a href="{{ url_for('research_support_page') }}" class="learn-more-link" style="color: #4169E1; text-decoration: none; font-weight: 600; display: inline-block; margin-top: 0.5rem; text-align: center; width: 100%;">Learn More →</a>
+            </div>
+            <div class="overlay-popup">
+                <h4>🔬 Research Support</h4>
+                <ul>
+                    <li>✓ Thesis Writing Assistance</li>
+                    <li>✓ Research Methodology Training</li>
+                    <li>✓ Literature Review Support</li>
+                    <li>✓ Statistical Analysis (SPSS, R)</li>
+                </ul>
+                <button class="overlay-desc-btn" data-service="research">📖 Read Full Description</button>
+                <a href="{{ url_for('research_support_page') }}" class="overlay-learn-more">Learn More →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Write a Review Section -->
+<div style="margin: 5rem 0; background: linear-gradient(135deg, #f0f5ff, white); border-radius: 60px; padding: 3rem;">
+    <h2 style="font-size: 2rem; text-align: center; margin-bottom: 2rem; color: #002868;">Share Your Experience</h2>
+    <p style="text-align: center; margin-bottom: 2rem;">We value your feedback! Please leave a review about your learning experience.</p>
+    
+    <div style="max-width: 600px; margin: 0 auto;">
+        <form id="publicReviewForm">
+            <div class="mb-3">
+                <label class="form-label">Your Name *</label>
+                <input type="text" class="form-control" id="reviewName" required style="border-radius: 60px; padding: 0.8rem 1.2rem;">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Your Email (optional)</label>
+                <input type="email" class="form-control" id="reviewEmail" style="border-radius: 60px; padding: 0.8rem 1.2rem;">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Rating *</label>
+                <select class="form-control" id="reviewRating" required style="border-radius: 60px; padding: 0.8rem 1.2rem;">
+                    <option value="5">★★★★★ - Excellent</option>
+                    <option value="4">★★★★ - Very Good</option>
+                    <option value="3">★★★ - Good</option>
+                    <option value="2">★★ - Fair</option>
+                    <option value="1">★ - Poor</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Your Review *</label>
+                <textarea class="form-control" id="reviewComment" rows="4" required style="border-radius: 20px;"></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Service (optional)</label>
+                <select class="form-control" id="reviewServiceType" style="border-radius: 60px;">
+                    <option value="">General Feedback</option>
+                    <option value="AI & ML">AI & ML Training</option>
+                    <option value="Power Platform">Power Platform Training</option>
+                    <option value="Cybersecurity">Cybersecurity Training</option>
+                    <option value="Data Analytics">Data Analytics Course</option>
+                    <option value="Research Support">Research Support</option>
+                    <option value="Teachers">Teacher Session</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary" style="background: #002868; border-radius: 60px; padding: 0.8rem 2rem; width: 100%;">Submit Review <i class="fas fa-paper-plane"></i></button>
+        </form>
+        <div id="reviewSubmitMessage" style="margin-top: 1rem; text-align: center;"></div>
+    </div>
+</div>
+
+<!-- All Customer Reviews Section -->
+<div style="margin: 3rem 0 5rem 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap;">
+        <h2 style="font-size: 2rem; color: #002868;">What Our Customers Say</h2>
+        <div id="averageRatingDisplay" style="background: white; padding: 0.8rem 1.5rem; border-radius: 60px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+            <span style="font-weight: 600;">Average Rating:</span>
+            <span id="avgStars" style="color: #f2b341;">★★★★★</span>
+            <span id="avgRatingValue">0.0</span> 
+            <span style="color: #666;">(from <span id="totalReviewsCount">0</span> reviews)</span>
+        </div>
+    </div>
+    
+    <div id="allReviewsList" style="display: grid; gap: 1.5rem;">
+        <div class="text-center py-5">
+            <i class="fas fa-spinner fa-spin fa-2x" style="color: #4169E1;"></i>
+            <p>Loading reviews...</p>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <button id="loadMoreReviews" class="btn btn-outline-primary" style="border-radius: 60px; display: none;">Load More Reviews</button>
+    </div>
+</div>
+
+<!-- Description Modal Popup -->
+<div id="descriptionModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 30px; padding: 30px; max-width: 550px; width: 90%; z-index: 10001; box-shadow: 0 30px 50px rgba(0,0,0,0.3); border-top: 5px solid #BF0A30;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 id="modalTitle" style="color: #002868; margin: 0;"></h3>
+        <button onclick="closeModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #BF0A30;">&times;</button>
+    </div>
+    <div id="modalContent" style="color: #1e2f4d; line-height: 1.8; max-height: 400px; overflow-y: auto;"></div>
+    <div style="margin-top: 25px; text-align: center;">
+        <button onclick="goToServicePage()" id="modalGoButton" style="background: #BF0A30; color: white; border: none; border-radius: 60px; padding: 12px 30px; cursor: pointer; font-weight: 600; font-size: 16px;">Go to Service Page →</button>
+    </div>
+</div>
+<div id="modalOverlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000;" onclick="closeModal()"></div>
+
+<style>
+    .service-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    .service-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 35px -15px rgba(0,40,104,0.2);
+    }
+    .overlay-popup {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #E0FFFF;
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 10;
+        border-radius: 30px;
+        border-left: 5px solid #00CED1;
+    }
+    .service-card:hover .overlay-popup {
+        opacity: 1;
+        visibility: visible;
+    }
+    .overlay-popup h4 {
+        color: #002868;
+        margin: 0 0 15px 0;
+        font-size: 1.2rem;
+        font-weight: 700;
+        text-align: center;
+    }
+    .overlay-popup ul {
+        margin: 0 0 15px 0;
+        padding-left: 20px;
+    }
+    .overlay-popup li {
+        margin-bottom: 8px;
+        color: #1e2f4d;
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+    .overlay-desc-btn {
+        background: #002868;
+        color: white;
+        border: none;
+        border-radius: 60px;
+        padding: 8px 12px;
+        margin-top: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    .overlay-desc-btn:hover {
+        background: #BF0A30;
+        transform: translateY(-2px);
+    }
+    .overlay-learn-more {
+        color: #4169E1;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-block;
+        margin-top: 10px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    .overlay-learn-more:hover {
+        color: #BF0A30;
+        transform: translateX(5px);
+    }
+    .stat-card {
+        transition: transform 0.3s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    .learn-more-link {
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+    .learn-more-link:hover {
+        transform: translateX(5px);
+        color: #BF0A30 !important;
+    }
+    .description-btn {
+        transition: all 0.3s ease;
+    }
+    .description-btn:hover {
+        background: #BF0A30 !important;
+        transform: translateY(-2px);
+    }
+</style>
+
+<script>
+// Full descriptions for each service
+const fullDescriptions = {
+    'ai-ml': {
+        title: '🤖 AI & Machine Learning Program',
+        content: `<p>Master the cutting-edge field of Artificial Intelligence and Machine Learning with hands-on projects.</p>
+        <h4 style="color: #002868; margin: 20px 0 10px;">What You'll Learn:</h4>
+        <ul>
+            <li>🐍 Python for AI/ML - TensorFlow, PyTorch, and scikit-learn</li>
+            <li>🧠 Deep Learning & Neural Networks - CNN, RNN, and Transformers</li>
+            <li>💬 Natural Language Processing - Text analysis and generation</li>
+            <li>👁️ Computer Vision - Image recognition and processing</li>
+            <li>⚙️ MLOps & Model Deployment - Production-ready ML systems</li>
+            <li>✨ Generative AI & Prompt Engineering - LLMs and prompt design</li>
+        </ul>`
+    },
+    'power-platform': {
+        title: '⚙️ Microsoft Power Platform Program',
+        content: `<p>Build enterprise-grade applications and automate business processes with Microsoft's powerful platform.</p>
+        <h4 style="color: #002868; margin: 20px 0 10px;">What You'll Master:</h4>
+        <ul>
+            <li>📱 Power Apps Development - Low-code application building</li>
+            <li>🔄 Power Automate Workflows - Business process automation</li>
+            <li>📊 Power BI Analytics - Interactive dashboards and reports</li>
+            <li>📁 SharePoint Integration - Document management and collaboration</li>
+            <li>💾 Dataverse Management - Secure data storage</li>
+            <li>🏅 Microsoft Certification Prep - Exam readiness training</li>
+        </ul>`
+    },
+    'cybersecurity': {
+        title: '🔒 Cybersecurity Program',
+        content: `<p>Protect organizations from cyber threats with comprehensive security training.</p>
+        <h4 style="color: #002868; margin: 20px 0 10px;">What You'll Learn:</h4>
+        <ul>
+            <li>🌐 Network Security Fundamentals - Firewalls, IDS/IPS, and secure design</li>
+            <li>🕵️ Ethical Hacking Techniques - Penetration testing and vulnerability assessment</li>
+            <li>🔐 Cryptography & Encryption - Data protection and PKI</li>
+            <li>🚨 Incident Response - Detection, response, and recovery</li>
+            <li>📋 Security Auditing - Compliance and risk assessment</li>
+            <li>🎯 CISSP/CISM Preparation - Certification training</li>
+        </ul>`
+    },
+    'data-analytics': {
+        title: '📊 Data Analytics Program',
+        content: `<p>Our comprehensive Data Analytics program equips you with the skills needed to excel in today's data-driven world.</p>
+        <h4 style="color: #002868; margin: 20px 0 10px;">What You'll Learn:</h4>
+        <ul>
+            <li>🐍 Python Programming for Data Science - Master pandas, numpy, and data visualization</li>
+            <li>📈 MATLAB for Numerical Computing - Advanced mathematical modeling</li>
+            <li>📉 R Language for Statistical Analysis - Statistical modeling and hypothesis testing</li>
+            <li>🗄️ SQL for Database Management - Complex queries and database design</li>
+            <li>🏆 Real-world Projects & Case Studies - Build a portfolio</li>
+            <li>🎓 Industry-recognized Certificate - Boost your career</li>
+        </ul>`
+    },
+    'teachers': {
+        title: '👨‍🏫 Expert Teachers Program',
+        content: `<p>Learn from the best educators with real-world experience and academic excellence.</p>
+        <h4 style="color: #002868; margin: 20px 0 10px;">Program Features:</h4>
+        <ul>
+            <li>🎯 One-on-One Mentoring Sessions - Personalized attention</li>
+            <li>🎓 PhD-level Instructors - Deep subject matter expertise</li>
+            <li>💼 Industry Expert Guidance - Real-world applications</li>
+            <li>🚀 Career Development Support - Job placement assistance</li>
+            <li>⏰ Flexible Scheduling - Learn at your own pace</li>
+            <li>📋 Personalized Learning Path - Customized curriculum</li>
+        </ul>`
+    },
+    'research': {
+        title: '🔬 Research Support Program',
+        content: `<p>Get expert guidance for your academic research from proposal to publication.</p>
+        <h4 style="color: #002868; margin: 20px 0 10px;">What You'll Get:</h4>
+        <ul>
+            <li>📝 Thesis Writing Assistance - Structure and formatting guidance</li>
+            <li>🔍 Research Methodology Training - Qualitative and quantitative methods</li>
+            <li>📚 Literature Review Support - Systematic review techniques</li>
+            <li>📊 Statistical Analysis (SPSS, R) - Data analysis and interpretation</li>
+            <li>📖 Academic Publishing Guidance - Journal selection and submission</li>
+            <li>📑 Citation Management (EndNote, Zotero) - Reference organization</li>
+        </ul>`
+    }
+};
+
+let currentService = null;
+let currentPage = 1;
+
+// Modal functions
+function showModal(service) {
+    const modal = document.getElementById('descriptionModal');
+    const overlay = document.getElementById('modalOverlay');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalContent = document.getElementById('modalContent');
+    
+    const details = fullDescriptions[service];
+    
+    modalTitle.innerHTML = details.title;
+    modalContent.innerHTML = details.content;
+    
+    modal.style.display = 'block';
+    overlay.style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('descriptionModal').style.display = 'none';
+    document.getElementById('modalOverlay').style.display = 'none';
+    currentService = null;
+}
+
+function goToServicePage() {
+    if (currentService) {
+        const card = document.querySelector(`.service-card[data-service="${currentService}"]`);
+        if (card) {
+            const url = card.getAttribute('data-url');
+            if (url) {
+                window.location.href = url;
+            }
+        }
+    }
+    closeModal();
+}
+
+// Description button click handlers
+document.querySelectorAll('.description-btn, .overlay-desc-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const service = this.getAttribute('data-service');
+        if (service && fullDescriptions[service]) {
+            currentService = service;
+            showModal(service);
+        }
+    });
+});
+
+// Escape key to close modal
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+
+// ========== REVIEWS FUNCTIONALITY (Vanilla JS) ==========
+function loadAllReviews(page = 1) {
+    fetch('/get-approved-reviews?page=' + page + '&limit=10')
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(response) {
+            if (response.success) {
+                displayReviews(response.reviews);
+                document.getElementById('totalReviewsCount').innerText = response.total;
+                
+                var avg = response.average_rating || 0;
+                document.getElementById('avgRatingValue').innerText = avg.toFixed(1);
+                
+                var starsHtml = '';
+                var fullStars = Math.floor(avg);
+                var hasHalfStar = (avg % 1) >= 0.5;
+                
+                for (var i = 0; i < fullStars; i++) {
+                    starsHtml += '<i class="fas fa-star"></i>';
+                }
+                if (hasHalfStar) {
+                    starsHtml += '<i class="fas fa-star-half-alt"></i>';
+                }
+                for (var i = starsHtml.length / 12; i < 5; i++) {
+                    starsHtml += '<i class="far fa-star"></i>';
+                }
+                document.getElementById('avgStars').innerHTML = starsHtml;
+                
+                if (response.has_more) {
+                    document.getElementById('loadMoreReviews').style.display = 'inline-block';
+                } else {
+                    document.getElementById('loadMoreReviews').style.display = 'none';
+                }
+            } else {
+                document.getElementById('allReviewsList').innerHTML = '<div class="text-center py-5"><p class="text-danger">Error loading reviews.</p></div>';
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            document.getElementById('allReviewsList').innerHTML = '<div class="text-center py-5"><p class="text-danger">Error loading reviews. Please refresh the page.</p></div>';
+        });
+}
+
+function displayReviews(reviews) {
+    var container = document.getElementById('allReviewsList');
+    
+    if (!reviews || reviews.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <i class="fas fa-comment-dots fa-3x mb-3" style="color: #4169E1;"></i>
+                <h4>No reviews yet</h4>
+                <p>Be the first to leave a review about your experience!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    var html = '';
+    for (var i = 0; i < reviews.length; i++) {
+        var review = reviews[i];
+        var starsHtml = '';
+        for (var s = 0; s < review.rating; s++) {
+            starsHtml += '<i class="fas fa-star" style="color: #f2b341;"></i>';
+        }
+        for (var s = review.rating; s < 5; s++) {
+            starsHtml += '<i class="far fa-star" style="color: #f2b341;"></i>';
+        }
+        
+        html += `
+            <div style="background: white; border-radius: 30px; padding: 1.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <div>
+                        <strong style="font-size: 1.1rem; color: #002868;">${escapeHtml(review.customer_name)}</strong>
+                    </div>
+                    <div style="color: #f2b341;">${starsHtml}</div>
+                </div>
+                <p style="line-height: 1.6; color: #1e2f4d;">${escapeHtml(review.comment)}</p>
+                <small style="color: #999;">${review.created_at}</small>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Submit review from homepage
+document.getElementById('publicReviewForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    var formData = {
+        customer_name: document.getElementById('reviewName').value,
+        customer_email: document.getElementById('reviewEmail').value,
+        rating: document.getElementById('reviewRating').value,
+        comment: document.getElementById('reviewComment').value,
+        service_name: document.getElementById('reviewServiceType').value
+    };
+    
+    if (!formData.customer_name || !formData.comment) {
+        document.getElementById('reviewSubmitMessage').innerHTML = '<div class="alert alert-danger">Please fill in your name and review.</div>';
+        return;
+    }
+    
+    document.getElementById('reviewSubmitMessage').innerHTML = '<div class="alert alert-info">Submitting your review...</div>';
+    
+    fetch('/submit-public-review', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(data) {
+        if (data.success) {
+            document.getElementById('reviewSubmitMessage').innerHTML = '<div class="alert alert-success">✓ Thank you for your review! It will be published after moderation.</div>';
+            document.getElementById('publicReviewForm').reset();
+            loadAllReviews(1);
+        } else {
+            document.getElementById('reviewSubmitMessage').innerHTML = '<div class="alert alert-danger">Error: ' + data.error + '</div>';
+        }
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+        document.getElementById('reviewSubmitMessage').innerHTML = '<div class="alert alert-danger">Error submitting review. Please try again.</div>';
+    });
+});
+
+// Load more reviews
+document.getElementById('loadMoreReviews').addEventListener('click', function() {
+    currentPage++;
+    fetch('/get-approved-reviews?page=' + currentPage + '&limit=10')
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(response) {
+            if (response.success && response.reviews.length > 0) {
+                appendReviews(response.reviews);
+                if (!response.has_more) {
+                    document.getElementById('loadMoreReviews').style.display = 'none';
+                }
+            } else {
+                document.getElementById('loadMoreReviews').style.display = 'none';
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+        });
+});
+
+function appendReviews(reviews) {
+    var container = document.getElementById('allReviewsList');
+    var html = container.innerHTML;
+    
+    for (var i = 0; i < reviews.length; i++) {
+        var review = reviews[i];
+        var starsHtml = '';
+        for (var s = 0; s < review.rating; s++) {
+            starsHtml += '<i class="fas fa-star" style="color: #f2b341;"></i>';
+        }
+        for (var s = review.rating; s < 5; s++) {
+            starsHtml += '<i class="far fa-star" style="color: #f2b341;"></i>';
+        }
+        
+        html += `
+            <div style="background: white; border-radius: 30px; padding: 1.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <div>
+                        <strong style="font-size: 1.1rem; color: #002868;">${escapeHtml(review.customer_name)}</strong>
+                    </div>
+                    <div style="color: #f2b341;">${starsHtml}</div>
+                </div>
+                <p style="line-height: 1.6; color: #1e2f4d;">${escapeHtml(review.comment)}</p>
+                <small style="color: #999;">${review.created_at}</small>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
+// Initialize Swiper and load reviews
+document.addEventListener('DOMContentLoaded', function() {
+    loadAllReviews(1);
+    
+    var swiper = new Swiper('.hero-swiper', {
+        loop: true,
+        autoplay: { delay: 5000, disableOnInteraction: false },
+        pagination: { el: '.swiper-pagination', clickable: true },
+        navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+        effect: 'fade',
+        speed: 800,
+    });
+});
+</script>
+{% endblock %}

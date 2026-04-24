@@ -1,0 +1,147 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Manage Reviews - Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Customer Reviews</h1>
+    <div>
+        <select class="form-select" onchange="window.location.href='?status='+this.value" style="width: auto; display: inline-block;">
+            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending ({{ pending_count }})</option>
+            <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+            <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+            <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All</option>
+        </select>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if reviews %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Email</th>
+                        <th>Service/Teacher</th>
+                        <th>Rating</th>
+                        <th>Comment</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in reviews %}
+                    <tr>
+                        <td>{{ review.id }}</td>
+                        <td><strong>{{ review.customer_name }}</strong></td>
+                        <td>{{ review.customer_email or 'N/A' }}</td>
+                        <td>
+                            {% if review.service_rel %}
+                                {{ review.service_rel.name }}
+                            {% elif review.teacher_rel %}
+                                {{ review.teacher_rel.name }}
+                            {% else %}
+                                <span class="badge bg-secondary">General Feedback</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="color: #f2b341;">
+                                {% for i in range(review.rating) %}
+                                    <i class="fas fa-star"></i>
+                                {% endfor %}
+                                {% for i in range(5 - review.rating) %}
+                                    <i class="far fa-star"></i>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td style="max-width: 300px;">
+                            {{ review.comment[:80] }}{% if review.comment|length > 80 %}...{% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if review.status == 'approved' %}success{% elif review.status == 'pending' %}warning{% else %}danger{% endif %}">
+                                {{ review.status }}
+                            </span>
+                        </td>
+                        <td>{{ review.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            {% if review.status == 'pending' %}
+                            <form method="POST" action="{{ url_for('admin_update_review_status', review_id=review.id) }}" style="display: inline;">
+                                <input type="hidden" name="status" value="approved">
+                                <button type="submit" class="btn btn-sm btn-success" title="Approve">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ url_for('admin_update_review_status', review_id=review.id) }}" style="display: inline;">
+                                <input type="hidden" name="status" value="rejected">
+                                <button type="submit" class="btn btn-sm btn-warning" title="Reject">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                            <button class="btn btn-sm btn-info" title="View Full" onclick='viewFullReview({{ review.id }}, "{{ review.customer_name|replace('"', '\\"') }}", {{ review.rating }}, "{{ review.comment|replace('"', '\\"')|replace('\n', ' ') }}")'>
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <form method="POST" action="{{ url_for('admin_delete_review', review_id=review.id) }}" style="display: inline;" onsubmit="return confirm('Delete this review?')">
+                                <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-comment-slash fa-4x mb-3" style="color: #ccc;"></i>
+            <h4>No reviews found</h4>
+            <p>When customers submit reviews, they will appear here.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- View Full Review Modal -->
+<div class="modal fade" id="fullReviewModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Review Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Customer:</strong> <span id="modalCustomerName"></span></p>
+                <p><strong>Rating:</strong> <span id="modalRating"></span></p>
+                <p><strong>Comment:</strong></p>
+                <p id="modalComment" style="background: #f5f5f5; padding: 15px; border-radius: 10px;"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function viewFullReview(id, name, rating, comment) {
+    document.getElementById('modalCustomerName').innerText = name;
+    
+    let starsHtml = '';
+    for (let i = 0; i < rating; i++) {
+        starsHtml += '<i class="fas fa-star" style="color: #f2b341;"></i>';
+    }
+    for (let i = 0; i < 5 - rating; i++) {
+        starsHtml += '<i class="far fa-star" style="color: #f2b341;"></i>';
+    }
+    document.getElementById('modalRating').innerHTML = starsHtml;
+    document.getElementById('modalComment').innerHTML = comment;
+    
+    new bootstrap.Modal(document.getElementById('fullReviewModal')).show();
+}
+</script>
+{% endblock %}

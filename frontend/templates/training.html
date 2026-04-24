@@ -1,0 +1,399 @@
+{% extends "base.html" %}
+
+{% block title %}Professional Training Programs - SOLI MICROLINK{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-5" style="color: #002868;">Professional Training Programs</h1>
+    
+    <div class="row mb-5">
+        <div class="col-12">
+            <p class="lead text-center">Comprehensive training in cutting-edge technologies with hands-on projects and industry-recognized certificates.</p>
+        </div>
+    </div>
+    
+    {% if services %}
+    <div class="row">
+        {% for service in services %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100" style="border-radius: 30px; border: none; box-shadow: 0 20px 30px -10px rgba(0,40,104,0.1); overflow: hidden;">
+                <img src="{{ service.image_url }}" class="card-img-top" alt="{{ service.name }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body p-4">
+                    <h3 class="card-title" style="color: #002868;">{{ service.name }}</h3>
+                    <p class="card-text text-muted mb-3">{{ service.description }}</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="h4" style="color: #4169E1;">${{ service.price }}</span>
+                        <span class="badge" style="background: #E0FFFF; color: #002868; padding: 0.5rem 1rem;">{{ service.duration_hours }} hours</span>
+                    </div>
+                    
+                    <!-- Rating and Review Count -->
+                    <div class="rating-info mb-3" id="rating-{{ service.id }}">
+                        <div style="color: #f2b341;">
+                            {% for i in range(5) %}
+                                {% if i < service.rating|int %}
+                                    <i class="fas fa-star"></i>
+                                {% elif i < service.rating|round(0, 'ceil') and service.rating % 1 >= 0.5 %}
+                                    <i class="fas fa-star-half-alt"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span style="color: #1e364a; font-size: 0.9rem;">
+                            {{ "%.1f"|format(service.rating) }} ({{ service.reviews_count }} reviews)
+                        </span>
+                    </div>
+                    
+                    <!-- Features -->
+                    <ul class="list-unstyled mb-4">
+                        {% set features = service.features|from_json %}
+                        {% for feature in features[:4] %}
+                        <li class="mb-2"><i class="fas fa-check-circle" style="color: #4169E1; margin-right: 10px;"></i> {{ feature }}</li>
+                        {% endfor %}
+                        {% if features|length > 4 %}
+                        <li class="text-muted">+{{ features|length - 4 }} more modules</li>
+                        {% endif %}
+                    </ul>
+                    
+                    <!-- Reviews Section -->
+                    <div class="reviews-section" style="margin-top: 1rem; border-top: 1px solid #e0d6b0; padding-top: 0.8rem;">
+                        <h6 style="font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                            <i class="fas fa-star" style="color: #f2b341;"></i> Latest Reviews
+                        </h6>
+                        <div id="reviews-{{ service.id }}" class="service-reviews" style="font-size: 0.85rem;">
+                            <p class="text-muted">Loading reviews...</p>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary view-reviews-btn" data-service-id="{{ service.id }}" data-service-name="{{ service.name }}" style="border-radius: 50px; margin-top: 0.5rem; font-size: 0.8rem; width: 100%;">
+                            View All Reviews
+                        </button>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-2 mb-2 mt-3">
+                        <button class="btn flex-fill book-training-btn" 
+                                data-service-id="{{ service.id }}"
+                                data-service-name="{{ service.name }}"
+                                style="background: #002868; color: white; border-radius: 60px; padding: 0.8rem; border: none;">
+                            <i class="fas fa-calendar-check"></i> BOOK
+                        </button>
+                        <button class="btn flex-fill add-training-to-cart" 
+                                data-service-id="{{ service.id }}"
+                                data-service-name="{{ service.name }}"
+                                style="background: #E0FFFF; color: #002868; border-radius: 60px; padding: 0.8rem; border: none;">
+                            <i class="fas fa-shopping-cart"></i> ADD TO CART
+                        </button>
+                    </div>
+                    
+                    <button class="btn btn-outline-primary w-100 review-training-btn"
+                            data-service-id="{{ service.id }}"
+                            data-service-name="{{ service.name }}"
+                            style="border-radius: 60px; border: 1px solid #4169E1; color: #4169E1;">
+                        <i class="fas fa-star"></i> WRITE A REVIEW
+                    </button>
+                    
+                    <a href="{{ url_for('training_detail', subcategory=service.subcategory) }}" class="btn btn-link w-100 mt-2" style="color: #4169E1;">
+                        Learn More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-tools fa-4x mb-3" style="color: #4169E1;"></i>
+        <h3>No training programs found</h3>
+        <p>Please check back later for our upcoming training programs.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Reviews Modal -->
+<div class="modal fade" id="reviewsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">All Reviews for <span id="modalServiceName"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="allReviewsContainer">
+                <!-- Reviews will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Review <span id="modalServiceName2"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reviewForm">
+                    <input type="hidden" id="reviewServiceId" name="service_id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Your Name *</label>
+                        <input type="text" class="form-control" name="customer_name" id="reviewCustomerName" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Your Email (optional)</label>
+                        <input type="email" class="form-control" name="customer_email" id="reviewCustomerEmail">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Rating *</label>
+                        <select class="form-control" name="rating" id="reviewRating" required>
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Very Good</option>
+                            <option value="3">3 - Good</option>
+                            <option value="2">2 - Fair</option>
+                            <option value="1">1 - Poor</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Your Review *</label>
+                        <textarea class="form-control" name="comment" id="reviewComment" rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitReview">Submit Review</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    console.log("Training page loaded");
+    
+    // Load reviews for each service
+    $('.service-reviews').each(function() {
+        var container = $(this);
+        var serviceId = container.attr('id').replace('reviews-', '');
+        loadServiceReviews(serviceId, container);
+    });
+    
+    // View all reviews button
+    $('.view-reviews-btn').click(function() {
+        var serviceId = $(this).data('service-id');
+        var serviceName = $(this).data('service-name');
+        
+        $('#modalServiceName').text(serviceName);
+        $('#allReviewsContainer').html('<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
+        
+        $.get('/get-reviews', {
+            service_id: serviceId
+        }, function(response) {
+            displayAllReviews(response.reviews);
+        }).fail(function() {
+            $('#allReviewsContainer').html('<p class="text-danger">Error loading reviews.</p>');
+        });
+        
+        $('#reviewsModal').modal('show');
+    });
+    
+    // Add training to cart
+    $('.add-training-to-cart').click(function() {
+        var serviceId = $(this).data('service-id');
+        var serviceName = $(this).data('service-name');
+        
+        $.post('/add-to-cart', {
+            item_type: 'service',
+            item_id: serviceId
+        }, function(response) {
+            if (response.success) {
+                alert('Added ' + serviceName + ' to cart!');
+                $('.cart-count').text(response.cart_count);
+            }
+        }).fail(function(xhr, status, error) {
+            alert('Error adding to cart: ' + error);
+        });
+    });
+    
+    // Book training
+    $('.book-training-btn').click(function() {
+        var serviceId = $(this).data('service-id');
+        var serviceName = $(this).data('service-name');
+        
+        // Use tomorrow as default date
+        var tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        var tomorrowStr = tomorrow.toISOString().split('T')[0];
+        
+        $.post('/add-to-cart', {
+            item_type: 'service',
+            item_id: serviceId,
+            booking_date: tomorrowStr,
+            booking_time: '09:00'
+        }, function(response) {
+            if (response.success) {
+                alert('Added ' + serviceName + ' to cart! Please complete checkout to book.');
+                $('.cart-count').text(response.cart_count);
+            }
+        }).fail(function(xhr, status, error) {
+            alert('Error adding to cart: ' + error);
+        });
+    });
+    
+    // Review button
+    $('.review-training-btn').click(function() {
+        var serviceId = $(this).data('service-id');
+        var serviceName = $(this).data('service-name');
+        
+        $('#reviewServiceId').val(serviceId);
+        $('#modalServiceName2').text(serviceName);
+        $('#reviewForm')[0].reset();
+        
+        $('#reviewModal').modal('show');
+    });
+    
+    // Submit review
+    $('#submitReview').click(function() {
+        var formData = {
+            service_id: $('#reviewServiceId').val(),
+            customer_name: $('#reviewCustomerName').val(),
+            customer_email: $('#reviewCustomerEmail').val(),
+            rating: $('#reviewRating').val(),
+            comment: $('#reviewComment').val()
+        };
+        
+        if (!formData.customer_name || !formData.comment) {
+            alert('Please fill in your name and review');
+            return;
+        }
+        
+        $.post('/submit-review', formData, function(response) {
+            if (response.success) {
+                alert(response.message);
+                $('#reviewModal').modal('hide');
+                $('#reviewForm')[0].reset();
+                
+                // Reload reviews for this service
+                var container = $('#reviews-' + serviceId);
+                loadServiceReviews(serviceId, container);
+            }
+        }).fail(function(xhr) {
+            var error = xhr.responseJSON ? xhr.responseJSON.error : 'Error submitting review';
+            alert(error);
+        });
+    });
+});
+
+function loadServiceReviews(serviceId, container) {
+    $.get('/get-reviews', {
+        service_id: serviceId
+    }, function(response) {
+        // Update rating display
+        var ratingContainer = $('#rating-' + serviceId);
+        if (ratingContainer.length && response.rating_info) {
+            var avg = response.rating_info.average;
+            var count = response.rating_info.count;
+            var stars = '';
+            for (var i = 0; i < 5; i++) {
+                if (i < Math.floor(avg)) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else if (i < Math.ceil(avg) && avg % 1 >= 0.5) {
+                    stars += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+            ratingContainer.html('<div style="color: #f2b341;">' + stars + '</div> <span style="color: #1e364a; font-size: 0.9rem;">' + avg.toFixed(1) + ' (' + count + ' reviews)</span>');
+        }
+        
+        // Display reviews
+        if (response.reviews && response.reviews.length > 0) {
+            var html = '';
+            // Show only the 2 most recent reviews
+            var recentReviews = response.reviews.slice(0, 2);
+            recentReviews.forEach(function(review) {
+                html += '<div style="margin-bottom: 0.5rem; padding: 0.3rem; background: #f8f9fa; border-radius: 8px;">';
+                html += '<div style="display: flex; justify-content: space-between;">';
+                html += '<strong>' + review.customer_name + '</strong>';
+                html += '<span style="color: #f2b341; font-size: 0.8rem;">';
+                for (var i = 0; i < review.rating; i++) {
+                    html += '<i class="fas fa-star"></i>';
+                }
+                html += '</span>';
+                html += '</div>';
+                html += '<p style="margin: 0.2rem 0; font-size: 0.8rem;">' + (review.comment.length > 50 ? review.comment.substring(0, 50) + '...' : review.comment) + '</p>';
+                html += '<small class="text-muted" style="font-size: 0.7rem;">' + review.created_at + '</small>';
+                html += '</div>';
+            });
+            container.html(html);
+        } else {
+            container.html('<p class="text-muted" style="font-size: 0.85rem;">No reviews yet. Be the first to review!</p>');
+        }
+    }).fail(function() {
+        container.html('<p class="text-danger" style="font-size: 0.85rem;">Error loading reviews.</p>');
+    });
+}
+
+function displayAllReviews(reviews) {
+    if (reviews && reviews.length > 0) {
+        var html = '';
+        reviews.forEach(function(review) {
+            html += '<div style="margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 10px;">';
+            html += '<div style="display: flex; justify-content: space-between; align-items: center;">';
+            html += '<strong>' + review.customer_name + '</strong>';
+            html += '<span style="color: #f2b341;">';
+            for (var i = 0; i < review.rating; i++) {
+                html += '<i class="fas fa-star"></i>';
+            }
+            html += '</span>';
+            html += '</div>';
+            html += '<p style="margin: 0.5rem 0;">' + review.comment + '</p>';
+            html += '<small class="text-muted">' + review.created_at + '</small>';
+            html += '</div>';
+        });
+        $('#allReviewsContainer').html(html);
+    } else {
+        $('#allReviewsContainer').html('<p class="text-muted">No reviews yet for this service.</p>');
+    }
+}
+</script>
+
+<style>
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 40px -10px rgba(0,40,104,0.2);
+    }
+    .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+    .list-unstyled li {
+        transition: transform 0.2s ease;
+    }
+    .list-unstyled li:hover {
+        transform: translateX(5px);
+        color: #4169E1;
+    }
+    .service-reviews {
+        max-height: 100px;
+        overflow-y: auto;
+        padding-right: 5px;
+    }
+    .service-reviews::-webkit-scrollbar {
+        width: 4px;
+    }
+    .service-reviews::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}

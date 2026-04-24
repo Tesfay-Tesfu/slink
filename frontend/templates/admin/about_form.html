@@ -1,0 +1,43 @@
+
+
+{% extends "admin/base_admin.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4">Edit About Us Page</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admin_update_about') }}">
+                <div class="mb-3">
+                    <label class="form-label">Title</label>
+                    <input type="text" name="title" class="form-control" value="{{ about.title if about else 'About SOLI MICROLINK' }}">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Main Content *</label>
+                    <textarea name="content" class="form-control" rows="5" required>{{ about.content if about else '' }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Mission</label>
+                    <textarea name="mission" class="form-control" rows="3">{{ about.mission if about else '' }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Vision</label>
+                    <textarea name="vision" class="form-control" rows="3">{{ about.vision if about else '' }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Core Values (one per line)</label>
+                    <textarea name="values" class="form-control" rows="5">{% if about and about.values %}{{ about.values|from_json|join('\n') }}{% endif %}</textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="{{ url_for('about_page') }}" class="btn btn-secondary" target="_blank">Preview</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

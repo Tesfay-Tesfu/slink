@@ -1,0 +1,43 @@
+
+
+{% extends "admin/base_admin.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4">{{ 'Edit' if policy else 'Add' }} Policy</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Title *</label>
+                    <input type="text" name="title" class="form-control" value="{{ policy.title if policy else '' }}" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Slug * (URL identifier, e.g., 'terms', 'privacy')</label>
+                    <input type="text" name="slug" class="form-control" value="{{ policy.slug if policy else '' }}" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Content * (HTML supported)</label>
+                    <textarea name="content" class="form-control" rows="15" required>{{ policy.content if policy else '' }}</textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Version</label>
+                    <input type="text" name="version" class="form-control" value="{{ policy.version if policy else '1.0' }}">
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input type="checkbox" name="is_active" class="form-check-input" id="isActive" {% if not policy or policy.is_active %}checked{% endif %}>
+                    <label class="form-check-label" for="isActive">Active</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{{ url_for('admin_policies') }}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

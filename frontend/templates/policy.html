@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}{{ policy.title }} - SOLI MICROLINK{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <div class="card-body p-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="card-title" style="color: #002868;">{{ policy.title }}</h1>
+                        <span class="badge" style="background: #E0FFFF; color: #002868; padding: 0.5rem 1rem;">Version {{ policy.version }}</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-alt"></i> Last updated: {{ policy.last_updated.strftime('%B %d, %Y') }}
+                        </small>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- FIX: Added |safe filter to render HTML properly -->
+                    <div class="policy-content" style="font-size: 1rem; line-height: 1.8; color: #1e2f4d;">
+                        {{ policy.content | safe }}
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('policies_list') }}" class="btn btn-outline-primary" style="border-radius: 60px;">
+                            <i class="fas fa-arrow-left"></i> Back to Policies
+                        </a>
+                        <small class="text-muted">Effective from {{ policy.last_updated.strftime('%B %d, %Y') }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .policy-content h1, .policy-content h2, .policy-content h3 {
+        color: #002868;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .policy-content p {
+        margin-bottom: 1rem;
+    }
+    .policy-content ul, .policy-content ol {
+        margin-bottom: 1rem;
+        padding-left: 1.5rem;
+    }
+    .policy-content li {
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}

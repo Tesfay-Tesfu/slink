@@ -1,0 +1,75 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Manage Bookings - Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Bookings</h1>
+    <div>
+        <select class="form-select" onchange="window.location.href='?status='+this.value" style="width: auto; display: inline-block;">
+            <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Bookings</option>
+            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>Confirmed</option>
+            <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+            <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+        </select>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Booking #</th>
+                        <th>Customer</th>
+                        <th>Service/Teacher</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>{{ booking.booking_number }}</td>
+                        <td>{{ booking.customer_name }}</td>
+                        <td>
+                            {% if booking.service_rel %}
+                                {{ booking.service_rel.name }}
+                            {% elif booking.teacher_rel %}
+                                {{ booking.teacher_rel.name }}
+                            {% else %}
+                                Consultation
+                            {% endif %}
+                        </td>
+                        <td>{{ booking.booking_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ booking.booking_time }}</td>
+                        <td>${{ "%.2f"|format(booking.amount) }}</td>
+                        <td>
+                            <span class="badge bg-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'pending' %}warning{% elif booking.status == 'cancelled' %}danger{% else %}secondary{% endif %}">
+                                {{ booking.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if booking.payment_status == 'paid' %}success{% elif booking.payment_status == 'unpaid' %}warning{% else %}secondary{% endif %}">
+                                {{ booking.payment_status }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin_booking_detail', booking_id=booking.id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

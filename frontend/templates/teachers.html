@@ -1,0 +1,479 @@
+{% extends "base.html" %}
+
+{% block title %}STEM Faculty - Afro-Merica{% endblock %}
+
+{% block content %}
+<div class="directory-header">
+    <h1 style="font-size: 2.4rem; font-weight: 600; color: #2c3e4e;">
+        <i class="fas fa-chalkboard-teacher"></i> STEM Faculty
+    </h1>
+</div>
+
+<!-- Teachers Grid -->
+<div class="teacher-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+    {% for teacher in teachers %}
+    <div class="teacher-card" style="background: #f4f7fc; border-radius: 2rem; box-shadow: 0 20px 30px -10px rgba(48, 62, 78, 0.25); overflow: hidden;">
+        <div class="card-photo" style="height: 250px; background-color: #bccbd8; background-image: url('{{ teacher.photo_url if teacher.photo_url else "https://picsum.photos/seed/" + teacher.id|string + "/300/300" }}'); background-size: cover; background-position: center;"></div>
+        
+        <div class="teacher-meta" style="padding: 1.5rem;">
+            <h3 class="teacher-name" style="font-size: 1.4rem;">{{ teacher.name }}</h3>
+            <span class="teacher-dept" style="display: inline-block; background: #e2ebf3; padding: 0.3rem 1.2rem; border-radius: 30px; margin-top: 0.5rem;">
+                {{ teacher.department }}
+            </span>
+            
+            <!-- Rating and Review Count -->
+            <div class="rating-info" style="display: flex; align-items: center; gap: 5px; margin: 0.7rem 0;" id="teacher-rating-{{ teacher.id }}">
+                <div style="color: #f2b341;">
+                    {% for i in range(5) %}
+                        {% if i < teacher.rating|int %}
+                            <i class="fas fa-star"></i>
+                        {% elif i < teacher.rating|round(0, 'ceil') and teacher.rating % 1 >= 0.5 %}
+                            <i class="fas fa-star-half-alt"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <span style="color: #1e364a; font-size: 0.9rem;">
+                    {{ "%.1f"|format(teacher.rating) }} ({{ teacher.reviews_count }} reviews)
+                </span>
+            </div>
+            
+            <p style="color: #1e364a; margin-top: 0.5rem;">{{ teacher.subject }}</p>
+            
+            <!-- Reviews Section for Teacher -->
+            <div class="reviews-section" style="margin-top: 1rem; border-top: 1px solid #e0e0e0; padding-top: 0.8rem;">
+                <h6 style="font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                    <i class="fas fa-star" style="color: #f2b341;"></i> Latest Reviews
+                </h6>
+                <div id="teacher-reviews-{{ teacher.id }}" class="teacher-reviews" style="font-size: 0.85rem;">
+                    <p class="text-muted">Loading reviews...</p>
+                </div>
+                <button class="btn btn-sm btn-outline-primary view-teacher-reviews-btn" data-teacher-id="{{ teacher.id }}" data-teacher-name="{{ teacher.name }}" style="border-radius: 50px; margin-top: 0.5rem; font-size: 0.8rem; width: 100%;">
+                    View All Reviews
+                </button>
+            </div>
+        </div>
+        
+        <div class="action-buttons" style="display: flex; gap: 0.5rem; padding: 1rem; background: #eef3f9;">
+            <button class="icon-btn book-teacher-btn" data-teacher-id="{{ teacher.id }}" data-teacher-name="{{ teacher.name }}" style="flex: 1; padding: 0.5rem; border-radius: 50px; border: none; background: white; cursor: pointer;">
+                <i class="fas fa-calendar-check"></i> BOOK
+            </button>
+            <button class="icon-btn add-teacher-to-cart" data-teacher-id="{{ teacher.id }}" data-teacher-name="{{ teacher.name }}" style="flex: 1; padding: 0.5rem; border-radius: 50px; border: none; background: white; cursor: pointer;">
+                <i class="fas fa-shopping-cart"></i> CART
+            </button>
+            <button class="icon-btn review-teacher-btn" data-teacher-id="{{ teacher.id }}" data-teacher-name="{{ teacher.name }}" style="flex: 1; padding: 0.5rem; border-radius: 50px; border: none; background: white; cursor: pointer;">
+                <i class="fas fa-star"></i> REVIEW
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Teacher Review Modal -->
+<div class="modal fade" id="teacherReviewModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Review <span id="reviewTeacherName"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="teacherReviewForm">
+                    <input type="hidden" id="reviewTeacherId" name="teacher_id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Your Name *</label>
+                        <input type="text" class="form-control" name="customer_name" id="reviewCustomerName" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Your Email (optional)</label>
+                        <input type="email" class="form-control" name="customer_email" id="reviewCustomerEmail">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Rating *</label>
+                        <select class="form-control" name="rating" id="reviewRating" required>
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Very Good</option>
+                            <option value="3">3 - Good</option>
+                            <option value="2">2 - Fair</option>
+                            <option value="1">1 - Poor</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Your Review *</label>
+                        <textarea class="form-control" name="comment" id="reviewComment" rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitTeacherReview">Submit Review</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Teacher Booking Modal -->
+<div class="modal fade" id="teacherBookingModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Book a Session with <span id="modalTeacherName"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="teacherBookingForm">
+                    <input type="hidden" id="teacherId" name="teacher_id">
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Select Date</label>
+                        <input type="date" class="form-control" id="bookingDate" name="booking_date" min="{{ now().strftime('%Y-%m-%d') }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Available Time Slots</label>
+                        <div id="timeSlots" class="d-flex flex-wrap gap-2">
+                            <!-- Time slots will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Your Name *</label>
+                        <input type="text" class="form-control" name="customer_name" id="customerName" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Your Email *</label>
+                        <input type="email" class="form-control" name="customer_email" id="customerEmail" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Your Phone</label>
+                        <input type="tel" class="form-control" name="customer_phone" id="customerPhone">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmTeacherBooking">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View All Reviews Modal -->
+<div class="modal fade" id="viewReviewsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">All Reviews for <span id="modalTeacherName2"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="allReviewsContainer">
+                <!-- Reviews will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    console.log("Teachers page loaded");
+    
+    // Load reviews for each teacher
+    $('.teacher-reviews').each(function() {
+        var container = $(this);
+        var teacherId = container.attr('id').replace('teacher-reviews-', '');
+        loadTeacherReviews(teacherId, container);
+    });
+    
+    // View all teacher reviews button
+    $('.view-teacher-reviews-btn').click(function() {
+        var teacherId = $(this).data('teacher-id');
+        var teacherName = $(this).data('teacher-name');
+        
+        $('#modalTeacherName2').text(teacherName);
+        $('#allReviewsContainer').html('<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
+        
+        $.get('{{ url_for("get_reviews") }}', {
+            teacher_id: teacherId
+        }, function(response) {
+            displayAllTeacherReviews(response.reviews);
+        }).fail(function() {
+            $('#allReviewsContainer').html('<p class="text-danger">Error loading reviews.</p>');
+        });
+        
+        $('#viewReviewsModal').modal('show');
+    });
+    
+    // Book teacher button click
+    $('.book-teacher-btn').click(function() {
+        var teacherId = $(this).data('teacher-id');
+        var teacherName = $(this).data('teacher-name');
+        
+        $('#teacherId').val(teacherId);
+        $('#modalTeacherName').text(teacherName);
+        
+        // Set min date to today
+        var today = new Date().toISOString().split('T')[0];
+        $('#bookingDate').attr('min', today);
+        $('#bookingDate').val(today);
+        
+        // Load available slots
+        loadTimeSlots(teacherId, today);
+        
+        $('#teacherBookingModal').modal('show');
+    });
+    
+    // Date change - reload slots
+    $('#bookingDate').change(function() {
+        var teacherId = $('#teacherId').val();
+        var date = $(this).val();
+        loadTimeSlots(teacherId, date);
+    });
+    
+    // Confirm teacher booking
+    $('#confirmTeacherBooking').click(function() {
+        var selectedTime = $('input[name="booking_time"]:checked').val();
+        
+        if (!selectedTime) {
+            alert('Please select a time slot');
+            return;
+        }
+        
+        var formData = {
+            item_type: 'teacher',
+            item_id: $('#teacherId').val(),
+            booking_date: $('#bookingDate').val(),
+            booking_time: selectedTime,
+            customer_name: $('#customerName').val(),
+            customer_email: $('#customerEmail').val(),
+            customer_phone: $('#customerPhone').val()
+        };
+        
+        // Validate required fields
+        if (!formData.customer_name || !formData.customer_email) {
+            alert('Please fill in your name and email');
+            return;
+        }
+        
+        $.post('{{ url_for("add_to_cart") }}', formData, function(response) {
+            if (response.success) {
+                $('#teacherBookingModal').modal('hide');
+                alert('Added to cart!');
+                $('.cart-count').text(response.cart_count);
+                $('#teacherBookingForm')[0].reset();
+            }
+        }).fail(function(xhr, status, error) {
+            alert('Error adding to cart: ' + error);
+        });
+    });
+    
+    // Add teacher to cart (direct cart without booking)
+    $('.add-teacher-to-cart').click(function() {
+        var teacherId = $(this).data('teacher-id');
+        var teacherName = $(this).data('teacher-name');
+        
+        // Use tomorrow as default date
+        var tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        var tomorrowStr = tomorrow.toISOString().split('T')[0];
+        
+        var formData = {
+            item_type: 'teacher',
+            item_id: teacherId,
+            booking_date: tomorrowStr,
+            booking_time: '09:00'
+        };
+        
+        $.post('{{ url_for("add_to_cart") }}', formData, function(response) {
+            if (response.success) {
+                alert('Added ' + teacherName + ' to cart!');
+                $('.cart-count').text(response.cart_count);
+            }
+        }).fail(function(xhr, status, error) {
+            alert('Error adding to cart: ' + error);
+        });
+    });
+    
+    // Review teacher button click
+    $('.review-teacher-btn').click(function() {
+        var teacherId = $(this).data('teacher-id');
+        var teacherName = $(this).data('teacher-name');
+        
+        $('#reviewTeacherId').val(teacherId);
+        $('#reviewTeacherName').text(teacherName);
+        $('#teacherReviewForm')[0].reset();
+        
+        $('#teacherReviewModal').modal('show');
+    });
+    
+    // Submit teacher review
+    $('#submitTeacherReview').click(function() {
+        var formData = {
+            teacher_id: $('#reviewTeacherId').val(),
+            customer_name: $('#reviewCustomerName').val(),
+            customer_email: $('#reviewCustomerEmail').val(),
+            rating: $('#reviewRating').val(),
+            comment: $('#reviewComment').val()
+        };
+        
+        if (!formData.customer_name || !formData.comment) {
+            alert('Please fill in your name and review');
+            return;
+        }
+        
+        $.post('{{ url_for("submit_review") }}', formData, function(response) {
+            if (response.success) {
+                alert(response.message);
+                $('#teacherReviewModal').modal('hide');
+                $('#teacherReviewForm')[0].reset();
+                
+                // Reload reviews for this teacher
+                var container = $('#teacher-reviews-' + teacherId);
+                loadTeacherReviews(teacherId, container);
+            }
+        }).fail(function(xhr) {
+            var error = xhr.responseJSON ? xhr.responseJSON.error : 'Error submitting review';
+            alert(error);
+        });
+    });
+});
+
+function loadTimeSlots(teacherId, date) {
+    $('#timeSlots').html('<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>');
+    
+    $.get('{{ url_for("get_slots") }}', {
+        teacher_id: teacherId,
+        date: date
+    }, function(data) {
+        var html = '';
+        if (data.slots && data.slots.length > 0) {
+            data.slots.forEach(function(slot) {
+                html += '<div class="form-check form-check-inline">';
+                html += '<input class="form-check-input" type="radio" name="booking_time" value="' + slot + '" id="slot_' + slot.replace(':', '') + '">';
+                html += '<label class="form-check-label btn btn-outline-primary" for="slot_' + slot.replace(':', '') + '">' + slot + '</label>';
+                html += '</div>';
+            });
+        } else {
+            html = '<p class="text-muted">No available slots for this date.</p>';
+        }
+        $('#timeSlots').html(html);
+    }).fail(function() {
+        $('#timeSlots').html('<p class="text-danger">Error loading slots. Please try again.</p>');
+    });
+}
+
+function loadTeacherReviews(teacherId, container) {
+    $.get('{{ url_for("get_reviews") }}', {
+        teacher_id: teacherId
+    }, function(response) {
+        // Update rating display
+        var ratingContainer = $('#teacher-rating-' + teacherId);
+        if (ratingContainer.length && response.rating_info) {
+            var avg = response.rating_info.average;
+            var count = response.rating_info.count;
+            var stars = '';
+            for (var i = 0; i < 5; i++) {
+                if (i < Math.floor(avg)) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else if (i < Math.ceil(avg) && avg % 1 >= 0.5) {
+                    stars += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+            ratingContainer.html('<div style="color: #f2b341;">' + stars + '</div> <span style="color: #1e364a; font-size: 0.9rem;">' + avg.toFixed(1) + ' (' + count + ' reviews)</span>');
+        }
+        
+        // Display reviews
+        if (response.reviews && response.reviews.length > 0) {
+            var html = '';
+            // Show only the 2 most recent reviews
+            var recentReviews = response.reviews.slice(0, 2);
+            recentReviews.forEach(function(review) {
+                html += '<div style="margin-bottom: 0.5rem; padding: 0.3rem; background: #f8f9fa; border-radius: 8px;">';
+                html += '<div style="display: flex; justify-content: space-between;">';
+                html += '<strong>' + review.customer_name + '</strong>';
+                html += '<span style="color: #f2b341; font-size: 0.8rem;">';
+                for (var i = 0; i < review.rating; i++) {
+                    html += '<i class="fas fa-star"></i>';
+                }
+                html += '</span>';
+                html += '</div>';
+                html += '<p style="margin: 0.2rem 0; font-size: 0.8rem;">' + (review.comment.length > 50 ? review.comment.substring(0, 50) + '...' : review.comment) + '</p>';
+                html += '<small class="text-muted" style="font-size: 0.7rem;">' + review.created_at + '</small>';
+                html += '</div>';
+            });
+            container.html(html);
+        } else {
+            container.html('<p class="text-muted" style="font-size: 0.85rem;">No reviews yet. Be the first to review!</p>');
+        }
+    }).fail(function() {
+        container.html('<p class="text-danger" style="font-size: 0.85rem;">Error loading reviews.</p>');
+    });
+}
+
+function displayAllTeacherReviews(reviews) {
+    if (reviews && reviews.length > 0) {
+        var html = '';
+        reviews.forEach(function(review) {
+            html += '<div style="margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 10px;">';
+            html += '<div style="display: flex; justify-content: space-between; align-items: center;">';
+            html += '<strong>' + review.customer_name + '</strong>';
+            html += '<span style="color: #f2b341;">';
+            for (var i = 0; i < review.rating; i++) {
+                html += '<i class="fas fa-star"></i>';
+            }
+            html += '</span>';
+            html += '</div>';
+            html += '<p style="margin: 0.5rem 0;">' + review.comment + '</p>';
+            html += '<small class="text-muted">' + review.created_at + '</small>';
+            html += '</div>';
+        });
+        $('#allReviewsContainer').html(html);
+    } else {
+        $('#allReviewsContainer').html('<p class="text-muted">No reviews yet for this teacher.</p>');
+    }
+}
+</script>
+
+<style>
+.form-check-inline {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.form-check-input {
+    display: none;
+}
+.form-check-input:checked + .form-check-label {
+    background: #002868;
+    color: white;
+    border-color: #002868;
+}
+.form-check-label {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 50px;
+    cursor: pointer;
+}
+.teacher-reviews {
+    max-height: 100px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+.teacher-reviews::-webkit-scrollbar {
+    width: 4px;
+}
+.teacher-reviews::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+</style>
+{% endblock %}

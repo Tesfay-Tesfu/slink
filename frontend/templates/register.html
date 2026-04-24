@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Register - SOLI MICROLINK{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 500px; margin: 3rem auto;">
+    <div class="card" style="border-radius: 60px; border: none; box-shadow: 0 20px 40px -20px rgba(0,40,104,0.2);">
+        <div class="card-body p-5">
+            <h2 class="text-center mb-4" style="color: #002868;">Create an Account</h2>
+            
+            <p class="text-center mb-4">Join SOLI MICROLINK to access courses, book sessions, and track your learning.</p>
+            
+            <form method="POST" action="{{ url_for('register') }}">
+                <div class="mb-3">
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" class="form-control" name="full_name" required style="border-radius: 60px; padding: 0.8rem;">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Email Address *</label>
+                    <input type="email" class="form-control" name="email" required style="border-radius: 60px; padding: 0.8rem;">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-control" name="phone" style="border-radius: 60px; padding: 0.8rem;">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Password *</label>
+                    <input type="password" class="form-control" name="password" required style="border-radius: 60px; padding: 0.8rem;">
+                    <small class="text-muted">Minimum 8 characters</small>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label">Confirm Password *</label>
+                    <input type="password" class="form-control" name="confirm_password" required style="border-radius: 60px; padding: 0.8rem;">
+                </div>
+                
+                <div class="mb-4 form-check">
+                    <input type="checkbox" class="form-check-input" id="terms" required>
+                    <label class="form-check-label" for="terms">
+                        I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100" style="background: #002868; border: none; border-radius: 60px; padding: 1rem;">
+                    <i class="fas fa-user-plus"></i> Register
+                </button>
+            </form>
+            
+            <hr class="my-4">
+            
+            <div class="text-center">
+                <p>Already have an account? <a href="{{ url_for('login') }}" style="color: #BF0A30;">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Panel - SOLI MICROLINK{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f8fe;
+            overflow-x: hidden;
+        }
+        
+        /* ===== SIDEBAR WITH SCROLL ===== */
+        .sidebar {
+            background: #002868;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            z-index: 1000;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Custom scrollbar for sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: #001a4a;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #BF0A30;
+            border-radius: 3px;
+        }
+        
+        .sidebar-logo {
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: #002868;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .sidebar-logo img {
+            max-height: 50px;
+        }
+        
+        .sidebar-logo h5 {
+            color: white;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .sidebar-menu {
+            padding: 1rem 0 2rem 0;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.7rem 1.5rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            gap: 12px;
+        }
+        
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left: 3px solid #BF0A30;
+        }
+        
+        .sidebar-menu a i {
+            width: 22px;
+            text-align: center;
+            color: #BF0A30;
+            font-size: 1rem;
+        }
+        
+        .sidebar-menu hr {
+            margin: 0.8rem 1.5rem;
+            border-color: rgba(255,255,255,0.1);
+        }
+        
+        /* Section headers */
+        .sidebar-section {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.4);
+            margin-top: 0.5rem;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 1.5rem;
+            min-height: 100vh;
+        }
+        
+        .top-bar {
+            background: white;
+            border-radius: 30px;
+            padding: 0.8rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-info .avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #eef2f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #002868;
+        }
+        
+        .logout-btn {
+            color: #BF0A30;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .btn-primary {
+            background: #002868;
+            border: none;
+            border-radius: 50px;
+            padding: 0.4rem 1.2rem;
+        }
+        
+        .btn-danger {
+            background: #BF0A30;
+            border: none;
+            border-radius: 50px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+                min-height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <img src="https://github.com/Tesfay-Tesfu/Mella-Technollogy-LLC-Python-Course/blob/main/S11.png?raw=true" 
+                 alt="Logo"
+                 onerror="this.style.display='none'">
+            <h5>Admin Panel</h5>
+        </div>
+        
+        <div class="sidebar-menu">
+            <div class="sidebar-section">MAIN</div>
+            <a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            
+            <div class="sidebar-section">MANAGEMENT</div>
+            <a href="{{ url_for('admin_teachers') }}" class="{% if request.endpoint in ['admin_teachers', 'admin_add_teacher', 'admin_edit_teacher'] %}active{% endif %}">
+                <i class="fas fa-chalkboard-teacher"></i> Teachers
+            </a>
+            <a href="{{ url_for('admin_services') }}" class="{% if request.endpoint in ['admin_services', 'admin_add_service', 'admin_edit_service'] %}active{% endif %}">
+                <i class="fas fa-cube"></i> Services
+            </a>
+            <a href="{{ url_for('admin_bookings') }}" class="{% if request.endpoint in ['admin_bookings', 'admin_booking_detail'] %}active{% endif %}">
+                <i class="fas fa-calendar-check"></i> Bookings
+            </a>
+            <a href="{{ url_for('admin_reviews') }}" class="{% if request.endpoint == 'admin_reviews' %}active{% endif %}">
+                <i class="fas fa-star"></i> Reviews
+            </a>
+            <a href="{{ url_for('admin_time_blocks') }}" class="{% if request.endpoint == 'admin_time_blocks' %}active{% endif %}">
+                <i class="fas fa-clock"></i> Time Blocks
+            </a>
+            
+            <div class="sidebar-section">CONTENT</div>
+            <a href="{{ url_for('admin_faqs') }}" class="{% if request.endpoint in ['admin_faqs', 'admin_add_faq', 'admin_edit_faq'] %}active{% endif %}">
+                <i class="fas fa-question-circle"></i> FAQs
+            </a>
+            <a href="{{ url_for('admin_policies') }}" class="{% if request.endpoint in ['admin_policies', 'admin_add_policy', 'admin_edit_policy'] %}active{% endif %}">
+                <i class="fas fa-file-contract"></i> Policies
+            </a>
+            
+            <!-- ===== ABOUT US LINK ===== -->
+            <a href="{{ url_for('admin_about_edit') }}" class="{% if request.endpoint == 'admin_about' %}active{% endif %}">
+                <i class="fas fa-info-circle"></i> About Us
+            </a>
+            
+            <a href="{{ url_for('admin_settings') }}" class="{% if request.endpoint == 'admin_settings' %}active{% endif %}">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+            
+            <hr>
+            
+            <div class="sidebar-section">SYSTEM</div>
+            <a href="{{ url_for('index') }}" target="_blank">
+                <i class="fas fa-globe"></i> View Website
+            </a>
+            <a href="{{ url_for('admin_logout') }}">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="top-bar">
+            <h5 class="mb-0">Welcome, {{ session.get('admin_username', 'Admin') }}</h5>
+            <div class="user-info">
+                <span class="avatar">
+                    <i class="fas fa-user"></i>
+                </span>
+                <a href="{{ url_for('admin_logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% elif category == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Content -->
+        {% block content %}{% endblock %}
+    </div>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

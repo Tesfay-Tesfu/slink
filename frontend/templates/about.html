@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}About Us - SOLI MICROLINK{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-center mb-0" style="color: #002868;">{{ about.title if about else 'About SOLI MICROLINK' }}</h1>
+        {% if session.is_admin %}
+        <a href="{{ url_for('admin_about_edit') }}" class="btn btn-primary" style="background: #002868; border-radius: 60px;">
+            <i class="fas fa-edit"></i> Edit Page
+        </a>
+        {% endif %}
+    </div>
+    
+    <div class="row mb-5">
+        <!-- Left Column - Text -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 p-4" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <div class="card-body">
+                    <h2 style="color: #002868; margin-bottom: 1.5rem;">Our Story</h2>
+                    <p style="font-size: 1.1rem; line-height: 1.8; color: #1e2f4d;">{{ about.content if about and about.content else 'SOLI MICROLINK is a premier educational platform dedicated to empowering students and professionals through high-quality training in data analytics, research support, and expert tutoring.' }}</p>
+                    
+                    <!-- ===== MISSION STATEMENT ===== -->
+                    <h3 style="color: #002868; margin: 2rem 0 1rem;">Mission Statement</h3>
+                    <p style="font-size: 1.1rem; line-height: 1.8;">
+                        <i class="fas fa-bullseye" style="color: #4169E1; margin-right: 10px;"></i> 
+                        Our mission is to empower individuals and organizations with practical, industry-relevant IT skills. We aim to provide high-quality, hands-on training that prepares learners for real-world challenges and career success.
+                    </p>
+                    
+                    <!-- ===== VISION STATEMENT ===== -->
+                    <h3 style="color: #002868; margin: 2rem 0 1rem;">Vision Statement</h3>
+                    <p style="font-size: 1.1rem; line-height: 1.8;">
+                        <i class="fas fa-eye" style="color: #4169E1; margin-right: 10px;"></i> 
+                        Our vision is to become a trusted leader in IT education by delivering innovative, accessible, and impactful training programs that help people grow, transform their careers, and succeed in the digital world.
+                    </p>
+                    
+                    <!-- ===== GOALS ===== -->
+                    <h3 style="color: #002868; margin: 2rem 0 1rem;">Our Goals</h3>
+                    <ul style="font-size: 1rem; line-height: 1.8; color: #1e2f4d; padding-left: 1.5rem;">
+                        <li><i class="fas fa-check-circle" style="color: #4169E1; margin-right: 10px;"></i> Provide hands-on, real-world training aligned with industry needs</li>
+                        <li><i class="fas fa-check-circle" style="color: #4169E1; margin-right: 10px;"></i> Help students gain certifications and job-ready skills</li>
+                        <li><i class="fas fa-check-circle" style="color: #4169E1; margin-right: 10px;"></i> Build a strong community of tech professionals and learners</li>
+                        <li><i class="fas fa-check-circle" style="color: #4169E1; margin-right: 10px;"></i> Offer affordable and flexible learning options</li>
+                        <li><i class="fas fa-check-circle" style="color: #4169E1; margin-right: 10px;"></i> Partner with organizations to support workforce development</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column - Owner Photo -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 p-4 text-center" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <div class="card-body">
+                    <div class="mb-4 position-relative">
+                        <img id="ownerPhoto" 
+                             src="{{ about.owner_photo_url if about and about.owner_photo_url else 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop' }}" 
+                             alt="Owner" 
+                             style="width: 250px; height: 250px; border-radius: 50%; object-fit: cover; border: 5px solid #4169E1; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    </div>
+                    <h2 style="color: #002868;">{{ about.owner_name if about and about.owner_name else 'Selam Tesfay' }}</h2>
+                    <p style="color: #4169E1; font-size: 1.2rem; font-weight: 500;">{{ about.owner_title if about and about.owner_title else 'Founder & CEO' }}</p>
+                    <p style="color: #1e2f4d; font-style: italic; margin-top: 1rem;">{{ about.owner_quote if about and about.owner_quote else 'Empowering the next generation of African innovators through quality education and research support.' }}</p>
+                    <div class="social-icons mt-4">
+                        <a href="https://www.linkedin.com/in/selu-welu-1a2b202aa/" target="_blank" style="background: #002868; color: white; width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 0 5px;"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://twitter.com/soli-microlink" target="_blank" style="background: #002868; color: white; width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 0 5px;"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.facebook.com/soli-microlink" target="_blank" style="background: #002868; color: white; width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin: 0 5px;"><i class="fab fa-facebook-f"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats Section - Dynamic -->
+    <div class="row mb-5">
+        {% set stats = about.stats|from_json if about and about.stats else {} %}
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-4" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <i class="fas fa-users fa-3x mb-3" style="color: #4169E1;"></i>
+                <h2 class="display-4" style="color: #002868;">{{ stats.teachers or '24+' }}</h2>
+                <p class="mb-0">Expert Teachers</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-4" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <i class="fas fa-book-open fa-3x mb-3" style="color: #4169E1;"></i>
+                <h2 class="display-4" style="color: #002868;">{{ stats.courses or '30+' }}</h2>
+                <p class="mb-0">Courses</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-4" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <i class="fas fa-star fa-3x mb-3" style="color: #4169E1;"></i>
+                <h2 class="display-4" style="color: #002868;">{{ stats.students or '500+' }}</h2>
+                <p class="mb-0">Students</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-4" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <i class="fas fa-globe-africa fa-3x mb-3" style="color: #4169E1;"></i>
+                <h2 class="display-4" style="color: #002868;">{{ stats.countries or '10+' }}</h2>
+                <p class="mb-0">Countries</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Core Values - Dynamic -->
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-center mb-4" style="color: #002868;">Our Core Values</h2>
+        </div>
+        {% set values = about.values|from_json if about and about.values else ['Excellence', 'Innovation', 'Integrity', 'Accessibility'] %}
+        {% for value in values %}
+        <div class="col-md-3 mb-3">
+            <div class="card text-center p-3" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);">
+                <i class="fas fa-gem fa-2x mb-2" style="color: #4169E1;"></i>
+                <h4 style="color: #002868;">{{ value }}</h4>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

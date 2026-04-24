@@ -1,0 +1,30 @@
+# Secrets
+.env
+*.env
+backend/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Database
+*.db
+*.sqlite
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Uploads
+frontend/static/uploads/*.jpg
+frontend/static/uploads/*.png
+
+# Backup files
+backup_database.db
+*.bak
