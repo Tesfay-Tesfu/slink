@@ -5,112 +5,56 @@
 {% block content %}
 <!-- main title -->
 <div class="section-head">
-    <h2>📊 Data Analytics <span>Python & MATLAB</span></h2>
+    <h2>📊 Data Analytics <span>Python, MATLAB, R, SQL, Power BI & Tableau</span></h2>
 </div>
 
 <!-- short description -->
 <div class="analytics-note" style="background: #eef2f8; border-radius: 60px; padding: 1.2rem 2.5rem; margin: 2rem 0; display: inline-block;">
-    <i class="fas fa-database" style="color:#002868;"></i> Professional data analytics training in <strong>Python</strong> and <strong>MATLAB</strong> — from beginner to advanced. Each course includes projects, certification & support.
+    <i class="fas fa-database" style="color:#002868;"></i> Professional data analytics training in <strong>Python, MATLAB, R, SQL, Power BI & Tableau</strong> — from beginner to advanced. Each course includes projects, certification & support.
 </div>
 
-<!-- PYTHON TRACK -->
-<div class="track-divider" style="display: flex; align-items: center; gap: 1rem; margin: 2rem 0 1rem;">
-    <i class="fab fa-python" style="font-size: 2rem; color: #BF0A30;"></i>
-    <h3 style="font-size: 1.8rem; color: #002868;">Python for Data Analytics</h3>
-</div>
-
+<!-- ALL DATA ANALYTICS COURSES (6 CARDS) -->
 <div class="course-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 3rem;">
-    {% set python_courses = services|selectattr('subcategory', 'equalto', 'python')|list %}
-    {% for service in python_courses %}
+    {% for service in services %}
     <div class="data-card" style="background: white; border-radius: 36px; padding: 0 1.6rem 1.8rem; box-shadow: 0 30px 34px -16px rgba(0,20,50,0.2);">
         <div class="card-header-gold" style="background: #D4AF37; margin: 0 -1.6rem 1.2rem -1.6rem; padding: 1.2rem 1.6rem; border-radius: 36px 36px 30px 30px;">
             <div class="course-name" style="font-size: 1.7rem; font-weight: 800;">{{ service.name }}</div>
-            <div class="price-amount" style="font-size: 2.2rem; font-weight: 800;">${{ service.price }}</div>
+            <!-- RED COLOR FOR CURRENT PRICE -->
+            <div class="price-amount" style="font-size: 2.2rem; font-weight: 800; color: #BF0A30;">${{ service.discounted_price or service.price }}</div>
+            {% if service.discounted_price %}
+            <div class="original-price" style="text-decoration: line-through; font-size: 0.9rem; color: #666;">${{ service.price }}</div>
+            {% endif %}
         </div>
+        
+        <!-- Language Badge based on subcategory -->
         <span class="lang-badge" style="display: inline-block; background: #002868; color: white; padding: 0.2rem 1.2rem; border-radius: 30px; margin-bottom: 0.5rem;">
-            <i class="fab fa-python"></i> Python
+            {% if service.subcategory == 'python-data' %}
+                <i class="fab fa-python"></i> Python
+            {% elif service.subcategory == 'matlab' %}
+                <i class="fas fa-cube"></i> MATLAB
+            {% elif service.subcategory == 'r-language' %}
+                <i class="fab fa-r-project"></i> R
+            {% elif service.subcategory == 'sql' %}
+                <i class="fas fa-database"></i> SQL
+            {% elif service.subcategory == 'powerbi' %}
+                <i class="fas fa-chart-line"></i> Power BI
+            {% elif service.subcategory == 'tableau' %}
+                <i class="fas fa-chart-bar"></i> Tableau
+            {% else %}
+                <i class="fas fa-chart-line"></i> Data Analytics
+            {% endif %}
         </span>
+        
         <ul class="data-features" style="list-style: none; margin: 0.5rem 0;">
             {% set features = service.features|from_json %}
-            {% for feature in features %}
+            {% for feature in features[:4] %}
             <li style="display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.8rem;">
                 <i class="fas fa-check-circle" style="color: #2A7F62;"></i> {{ feature }}
             </li>
             {% endfor %}
-        </ul>
-        
-        <!-- Rating and Review Count -->
-        <div class="rating-info" style="display: flex; align-items: center; gap: 5px; margin: 0.5rem 0;" id="rating-{{ service.id }}">
-            <div style="color: #f2b341;">
-                {% for i in range(5) %}
-                    {% if i < service.rating|int %}
-                        <i class="fas fa-star"></i>
-                    {% elif i < service.rating|round(0, 'ceil') and service.rating % 1 >= 0.5 %}
-                        <i class="fas fa-star-half-alt"></i>
-                    {% else %}
-                        <i class="far fa-star"></i>
-                    {% endif %}
-                {% endfor %}
-            </div>
-            <span style="color: #1e364a; font-size: 0.9rem;">
-                {{ "%.1f"|format(service.rating) }} ({{ service.reviews_count }} reviews)
-            </span>
-        </div>
-        
-        <!-- Reviews Section -->
-        <div class="reviews-section" style="margin-top: 1rem; border-top: 1px solid #e0d6b0; padding-top: 0.8rem;">
-            <h6 style="font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem;">
-                <i class="fas fa-star" style="color: #f2b341;"></i> Latest Reviews
-            </h6>
-            <div id="reviews-{{ service.id }}" class="service-reviews" style="font-size: 0.85rem;">
-                <p class="text-muted">Loading reviews...</p>
-            </div>
-            <button class="btn btn-sm btn-outline-primary view-reviews-btn" data-service-id="{{ service.id }}" data-service-name="{{ service.name }}" style="border-radius: 50px; margin-top: 0.5rem; font-size: 0.8rem; width: 100%;">
-                View All Reviews
-            </button>
-        </div>
-        
-        <div class="card-actions-bottom" style="display: flex; justify-content: space-between; margin-top: 1.4rem; border-top: 2px dashed #e0d6b0; padding-top: 1.2rem;">
-            <div class="action-group" style="display: flex; gap: 0.6rem;">
-                <button class="action-icon book-service-btn" data-service-id="{{ service.id }}" data-service-name="{{ service.name }}" style="background: #dde9f5; border: none; border-radius: 50px; padding: 0.5rem 1.2rem; cursor: pointer;">
-                    <i class="fas fa-book-open"></i> BOOK
-                </button>
-                <button class="action-icon add-service-to-cart" data-service-id="{{ service.id }}" data-service-name="{{ service.name }}" style="background: #e2f0e8; border: none; border-radius: 50px; padding: 0.5rem 1.2rem; cursor: pointer;">
-                    <i class="fas fa-shopping-cart"></i> CART
-                </button>
-            </div>
-            <button class="action-icon review-service-btn" data-service-id="{{ service.id }}" data-service-name="{{ service.name }}" style="background: #fcf3e0; border: none; border-radius: 50px; padding: 0.5rem 1.2rem; cursor: pointer;">
-                <i class="fas fa-star"></i> REVIEW
-            </button>
-        </div>
-    </div>
-    {% endfor %}
-</div>
-
-<!-- MATLAB TRACK -->
-<div class="track-divider" style="display: flex; align-items: center; gap: 1rem; margin-top: 2.5rem;">
-    <i class="fas fa-cube" style="font-size: 2rem; color: #D4AF37;"></i>
-    <h3 style="font-size: 1.8rem; color: #002868;">MATLAB for Data Analytics</h3>
-</div>
-
-<div class="course-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 3rem;">
-    {% set matlab_courses = services|selectattr('subcategory', 'equalto', 'matlab')|list %}
-    {% for service in matlab_courses %}
-    <div class="data-card" style="background: white; border-radius: 36px; padding: 0 1.6rem 1.8rem; box-shadow: 0 30px 34px -16px rgba(0,20,50,0.2);">
-        <div class="card-header-gold" style="background: #D4AF37; margin: 0 -1.6rem 1.2rem -1.6rem; padding: 1.2rem 1.6rem; border-radius: 36px 36px 30px 30px;">
-            <div class="course-name" style="font-size: 1.7rem; font-weight: 800;">{{ service.name }}</div>
-            <div class="price-amount" style="font-size: 2.2rem; font-weight: 800;">${{ service.price }}</div>
-        </div>
-        <span class="lang-badge" style="display: inline-block; background: #002868; color: white; padding: 0.2rem 1.2rem; border-radius: 30px; margin-bottom: 0.5rem;">
-            <i class="fas fa-cube"></i> MATLAB
-        </span>
-        <ul class="data-features" style="list-style: none; margin: 0.5rem 0;">
-            {% set features = service.features|from_json %}
-            {% for feature in features %}
-            <li style="display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.8rem;">
-                <i class="fas fa-check-circle" style="color: #2A7F62;"></i> {{ feature }}
-            </li>
-            {% endfor %}
+            {% if features|length > 4 %}
+            <li class="text-muted">+{{ features|length - 4 }} more modules</li>
+            {% endif %}
         </ul>
         
         <!-- Rating and Review Count -->
@@ -170,7 +114,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="allReviewsContainer">
-                <!-- Reviews will be loaded here -->
             </div>
         </div>
     </div>
@@ -222,9 +165,35 @@
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
+<style>
+.service-reviews {
+    max-height: 100px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+.service-reviews::-webkit-scrollbar {
+    width: 4px;
+}
+.service-reviews::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+.data-card {
+    transition: transform 0.3s ease;
+}
+.data-card:hover {
+    transform: translateY(-5px);
+}
+.action-icon {
+    transition: all 0.3s ease;
+}
+.action-icon:hover {
+    transform: translateY(-2px);
+    opacity: 0.8;
+}
+</style>
+
 <script>
 $(document).ready(function() {
     console.log("Data Analytics page loaded");
@@ -278,7 +247,6 @@ $(document).ready(function() {
         var serviceId = $(this).data('service-id');
         var serviceName = $(this).data('service-name');
         
-        // Use tomorrow as default date
         var tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         var tomorrowStr = tomorrow.toISOString().split('T')[0];
@@ -312,8 +280,9 @@ $(document).ready(function() {
     
     // Submit service review
     $('#submitServiceReview').click(function() {
+        var serviceId = $('#reviewServiceId').val();
         var formData = {
-            service_id: $('#reviewServiceId').val(),
+            service_id: serviceId,
             customer_name: $('#reviewCustomerName').val(),
             customer_email: $('#reviewCustomerEmail').val(),
             rating: $('#reviewRating').val(),
@@ -331,7 +300,6 @@ $(document).ready(function() {
                 $('#serviceReviewModal').modal('hide');
                 $('#serviceReviewForm')[0].reset();
                 
-                // Reload reviews for this service
                 var container = $('#reviews-' + serviceId);
                 loadServiceReviews(serviceId, container);
             }
@@ -346,7 +314,6 @@ function loadServiceReviews(serviceId, container) {
     $.get('{{ url_for("get_reviews") }}', {
         service_id: serviceId
     }, function(response) {
-        // Update rating display
         var ratingContainer = $('#rating-' + serviceId);
         if (ratingContainer.length && response.rating_info) {
             var avg = response.rating_info.average;
@@ -364,10 +331,8 @@ function loadServiceReviews(serviceId, container) {
             ratingContainer.html('<div style="color: #f2b341;">' + stars + '</div> <span style="color: #1e364a; font-size: 0.9rem;">' + avg.toFixed(1) + ' (' + count + ' reviews)</span>');
         }
         
-        // Display reviews
         if (response.reviews && response.reviews.length > 0) {
             var html = '';
-            // Show only the 2 most recent reviews
             var recentReviews = response.reviews.slice(0, 2);
             recentReviews.forEach(function(review) {
                 html += '<div style="margin-bottom: 0.5rem; padding: 0.3rem; background: #f8f9fa; border-radius: 8px;">';
@@ -415,19 +380,4 @@ function displayAllReviews(reviews) {
     }
 }
 </script>
-
-<style>
-.service-reviews {
-    max-height: 100px;
-    overflow-y: auto;
-    padding-right: 5px;
-}
-.service-reviews::-webkit-scrollbar {
-    width: 4px;
-}
-.service-reviews::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 4px;
-}
-</style>
 {% endblock %}

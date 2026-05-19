@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Policies - SOLI MICROLINK{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-5" style="color: #002868;">Our Policies</h1>
+    
+    <div class="row">
+        {% for policy in policies %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100" style="border-radius: 30px; border: none; box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1); transition: transform 0.3s ease;">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-file-contract" style="font-size: 2rem; color: #4169E1;"></i>
+                        <h3 class="card-title mb-0 ms-3" style="color: #002868;">{{ policy.title }}</h3>
+                    </div>
+                    <p class="card-text text-muted" style="line-height: 1.8;">
+                        {{ policy.content|striptags|truncate(200) }}
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="badge" style="background: #E0FFFF; color: #002868;">Version {{ policy.version }}</span>
+                        <a href="{{ url_for('policy_page', slug=policy.slug) }}" class="btn btn-primary" style="background: #002868; border-radius: 60px; padding: 0.5rem 1.5rem;">
+                            Read More <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    <!-- FIXED: Handle None value for last_updated -->
+                    <small class="text-muted d-block mt-3">
+                        Last updated: {% if policy.last_updated %}{{ policy.last_updated.strftime('%B %d, %Y') }}{% else %}April 20, 2026{% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if not policies %}
+    <div class="text-center py-5">
+        <i class="fas fa-file-contract fa-4x mb-3" style="color: #4169E1;"></i>
+        <h3>No policies found</h3>
+        <p>Please check back later for our policies.</p>
+        {% if session.is_admin %}
+        <a href="{{ url_for('admin_policies') }}" class="btn btn-primary mt-3">Add Policy</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

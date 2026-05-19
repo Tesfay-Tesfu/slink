@@ -1,0 +1,149 @@
+
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Edit About Us Page{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4">Edit About Us Page</h1>
+    
+    <form method="POST" action="{{ url_for('admin_about_update') }}" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Main Content</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Page Title</label>
+                            <input type="text" name="title" class="form-control" value="{{ about.title }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Main Content / Our Story</label>
+                            <textarea name="content" class="form-control" rows="6" required>{{ about.content }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Mission Statement</label>
+                            <textarea name="mission" class="form-control" rows="3">{{ about.mission }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Vision Statement</label>
+                            <textarea name="vision" class="form-control" rows="3">{{ about.vision }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Owner/Founder Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Owner Name</label>
+                            <input type="text" name="owner_name" class="form-control" value="{{ about.owner_name }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Owner Title</label>
+                            <input type="text" name="owner_title" class="form-control" value="{{ about.owner_title }}">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Owner Quote</label>
+                            <textarea name="owner_quote" class="form-control" rows="2">{{ about.owner_quote }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Owner Photo URL</label>
+                            <input type="url" name="owner_photo_url" id="photoUrl" class="form-control" value="{{ about.owner_photo_url }}">
+                            <small class="text-muted">Or upload below</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Upload Photo</label>
+                            <input type="file" name="owner_photo" class="form-control" accept="image/*">
+                            {% if about.owner_photo_url %}
+                            <div class="mt-2">
+                                <img src="{{ about.owner_photo_url }}" style="max-height: 100px; border-radius: 10px;">
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Social Media Links</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <label class="form-label">LinkedIn</label>
+                            <input type="url" name="linkedin_url" class="form-control" value="{{ about.linkedin_url }}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Twitter</label>
+                            <input type="url" name="twitter_url" class="form-control" value="{{ about.twitter_url }}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Facebook</label>
+                            <input type="url" name="facebook_url" class="form-control" value="{{ about.facebook_url }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Core Values (one per line)</h5>
+                    </div>
+                    <div class="card-body">
+                        <textarea name="values" class="form-control" rows="6">{% if about.values %}{{ about.values|from_json|join('\n') }}{% endif %}</textarea>
+                        <small class="text-muted">Example: Excellence, Innovation, Integrity, Accessibility</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Statistics (Numbers)</h5>
+                    </div>
+                    <div class="card-body">
+                        {% set stats = about.stats|from_json if about.stats else {} %}
+                        <div class="mb-2">
+                            <label class="form-label">Teachers Count</label>
+                            <input type="text" name="stat_teachers" class="form-control" value="{{ stats.teachers or '24+' }}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Courses Count</label>
+                            <input type="text" name="stat_courses" class="form-control" value="{{ stats.courses or '30+' }}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Students Count</label>
+                            <input type="text" name="stat_students" class="form-control" value="{{ stats.students or '500+' }}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Countries Count</label>
+                            <input type="text" name="stat_countries" class="form-control" value="{{ stats.countries or '10+' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-end">
+            <a href="{{ url_for('about_page') }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

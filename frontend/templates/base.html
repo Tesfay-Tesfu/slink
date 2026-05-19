@@ -83,7 +83,7 @@
         }
 
         .contact-container i {
-            color: #4169E1; /* Blue icons */
+            color: #4169E1;
         }
 
         /* Premium Header */
@@ -94,6 +94,8 @@
             align-items: center;
             margin-bottom: 1rem;
             padding: 1rem 0;
+            position: relative;
+            z-index: 100000;
         }
 
         .brand {
@@ -136,7 +138,7 @@
         }
 
         .page-links a i {
-            color: #4169E1; /* Blue icons */
+            color: #4169E1;
             transition: transform 0.3s ease;
         }
 
@@ -149,6 +151,7 @@
             transform: scale(1.1);
         }
 
+        /* User Menu */
         .user-menu {
             display: flex;
             align-items: center;
@@ -175,23 +178,30 @@
         }
 
         .user-dropdown-btn i {
-            color: #4169E1; /* Blue icon */
+            color: #4169E1;
         }
 
         .user-dropdown-btn:hover {
             background: rgba(0,40,104,0.1);
         }
 
+        /* FIXED DROPDOWN - APPEARS ABOVE EVERYTHING */
         .user-dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background: white;
-            min-width: 200px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px -10px rgba(0,40,104,0.2);
-            z-index: 1000;
-            overflow: hidden;
+            position: fixed !important;
+            top: 70px !important;
+            right: 20px !important;
+            left: auto !important;
+            background: white !important;
+            min-width: 220px !important;
+            border-radius: 20px !important;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important;
+            z-index: 999999 !important;
+            display: none !important;
+            overflow: hidden !important;
+        }
+
+        .user-dropdown:hover .user-dropdown-content {
+            display: block !important;
         }
 
         .user-dropdown-content a {
@@ -203,7 +213,7 @@
         }
 
         .user-dropdown-content a i {
-            color: #4169E1; /* Blue icons */
+            color: #4169E1;
             width: 20px;
             margin-right: 10px;
         }
@@ -213,8 +223,9 @@
             color: #002868;
         }
 
-        .user-dropdown:hover .user-dropdown-content {
-            display: block;
+        .user-dropdown-content hr {
+            margin: 0;
+            border-color: #eee;
         }
 
         .cart-badge {
@@ -223,7 +234,7 @@
         }
 
         .cart-badge i {
-            color: #4169E1; /* Blue icon */
+            color: #4169E1;
             transition: transform 0.3s ease;
         }
 
@@ -293,10 +304,10 @@
         }
 
         .mobile-nav-toggle i {
-            color: white; /* Keep white for contrast */
+            color: white;
         }
 
-        /* Main Navigation - Cyan Boxes */
+        /* Main Navigation - Lower z-index */
         .main-nav {
             background: rgba(255,255,255,0.95);
             backdrop-filter: blur(10px);
@@ -310,6 +321,8 @@
             gap: 1.5rem;
             transition: all 0.3s ease;
             border: 1px solid rgba(255,255,255,0.5);
+            position: relative;
+            z-index: 1;
         }
 
         .main-nav a {
@@ -320,18 +333,18 @@
             border-radius: 40px;
             transition: all 0.3s ease;
             position: relative;
-            background-color: #E0FFFF; /* Cyan color */
-            border: 1px solid #00CED1; /* Darker cyan border */
+            background-color: #E0FFFF;
+            border: 1px solid #00CED1;
         }
 
         .main-nav a i {
             margin-right: 6px;
-            color: #4169E1; /* Blue icons */
+            color: #4169E1;
             transition: transform 0.3s ease;
         }
 
         .main-nav a:hover {
-            background-color: #AFEEEE; /* Lighter cyan on hover */
+            background-color: #AFEEEE;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,206,209,0.3);
         }
@@ -341,7 +354,7 @@
         }
 
         .main-nav a.active {
-            background-color: #40E0D0; /* Turquoise for active */
+            background-color: #40E0D0;
             color: #002868;
             font-weight: 600;
         }
@@ -427,9 +440,19 @@
                 width: 100%;
                 justify-content: center;
             }
+            
+            /* Mobile dropdown fix */
+            .user-dropdown-content {
+                position: fixed !important;
+                top: auto !important;
+                bottom: 80px !important;
+                right: 20px !important;
+                left: auto !important;
+                z-index: 999999 !important;
+            }
         }
 
-        /* Swiper Slider Styles */
+        /* Swiper Slider Styles - keep existing */
         .hero-swiper {
             width: 100%;
             height: 600px;
@@ -547,7 +570,6 @@
             margin-bottom: 1rem;
         }
 
-        /* Map Container - Top of Footer */
         .map-container {
             width: 100%;
             height: 300px;
@@ -622,7 +644,7 @@
         }
 
         .footer-col i {
-            color: #4169E1; /* Blue icons */
+            color: #4169E1;
             margin-right: 10px;
         }
 
@@ -659,23 +681,6 @@
             background: rgba(255,255,255,0.2);
         }
 
-        .social-icons a[href*="facebook"]:hover {
-            background: #1877f2;
-        }
-        .social-icons a[href*="twitter"]:hover,
-        .social-icons a[href*="x.com"]:hover {
-            background: #000000;
-        }
-        .social-icons a[href*="linkedin"]:hover {
-            background: #0077b5;
-        }
-        .social-icons a[href*="instagram"]:hover {
-            background: #e4405f;
-        }
-        .social-icons a[href*="github"]:hover {
-            background: #333333;
-        }
-
         .footer-links {
             list-style: none;
             padding: 0;
@@ -702,7 +707,6 @@
             margin: 2rem 0 1rem;
         }
 
-        /* Professional Developer Box */
         .developer-box {
             background: linear-gradient(145deg, #1e2f40, #0f1a24);
             border-radius: 20px;
@@ -841,6 +845,27 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        .reviews-container {
+            margin: 3rem 0 5rem 0;
+        }
+        .review-card {
+            background: white;
+            border-radius: 30px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        .review-card:hover {
+            transform: translateY(-5px);
+        }
+        .review-stars {
+            color: #f2b341;
+        }
+        .load-more-btn {
+            border-radius: 60px;
+            padding: 0.6rem 2rem;
+        }
     </style>
     
     {% block extra_css %}{% endblock %}
@@ -849,14 +874,14 @@
     <!-- Top Contact Bar -->
     <div class="top-contact-bar">
         <div class="contact-container">
-            <a href="tel:{{ settings.get('footer_phone', '+13019961201') }}">
-                <i class="fas fa-phone"></i> {{ settings.get('footer_phone', '+1 (301) 996-1201') }}
+            <a href="tel:{{ settings.get('footer_phone', '+16122683832') }}">
+                <i class="fas fa-phone"></i> {{ settings.get('footer_phone', '+1 (612) 268-3832') }}
             </a>
-            <a href="mailto:{{ settings.get('footer_email', 'info@soli-microlink.com') }}">
-                <i class="fas fa-envelope"></i> {{ settings.get('footer_email', 'info@soli-microlink.com') }}
+            <a href="mailto:{{ settings.get('footer_email', 'info@solmicrolink.com') }}">
+                <i class="fas fa-envelope"></i> {{ settings.get('footer_email', 'info@solmicrolink.com') }}
             </a>
-            <a href="https://www.google.com/maps/search/?api=1&query=7513+Maple+Ave+Takoma+Park+MD+20912" target="_blank">
-                <i class="fas fa-map-marker-alt"></i> Takoma Park, MD
+            <a href="https://www.google.com/maps/search/?api=1&query=3636+16th+st+NW+Washington+DC+20010" target="_blank">
+                <i class="fas fa-map-marker-alt"></i> Washington, DC
             </a>
         </div>
     </div>
@@ -929,23 +954,29 @@
             <i class="fas fa-bars"></i>
         </button>
 
-        <!-- Main Navigation - Cyan Boxes (Contact Removed) -->
+        <!-- Main Navigation -->
         <nav class="main-nav" id="mainNav" data-aos="fade-up" data-aos-delay="200">
-            {% set nav_links = [
-                {'name': 'Home', 'url': url_for('index'), 'icon': 'fas fa-home'},
-                {'name': 'Teachers', 'url': url_for('teachers_page'), 'icon': 'fas fa-chalkboard-teacher'},
-                {'name': 'Data Analytics', 'url': url_for('data_analytics_page'), 'icon': 'fas fa-chart-line'},
-                {'name': 'Research Support', 'url': url_for('research_support_page'), 'icon': 'fas fa-microscope'},
-                {'name': 'AI & ML', 'url': url_for('training_ai_ml'), 'icon': 'fas fa-robot'},
-                {'name': 'Power Platform', 'url': url_for('training_power_platform'), 'icon': 'fab fa-microsoft'},
-                {'name': 'Cybersecurity', 'url': url_for('training_cybersecurity'), 'icon': 'fas fa-shield-alt'}
-            ] %}
-            
-            {% for link in nav_links %}
-            <a href="{{ link.url }}" class="{% if request.path == link.url %}active{% endif %}">
-                <i class="{{ link.icon }}"></i> {{ link.name }}
+            <a href="{{ url_for('index') }}" class="{% if request.path == url_for('index') %}active{% endif %}">
+                <i class="fas fa-home"></i> Home
             </a>
-            {% endfor %}
+            <a href="{{ url_for('training_ai_ml') }}" class="{% if request.path == url_for('training_ai_ml') %}active{% endif %}">
+                <i class="fas fa-robot"></i> AI & ML
+            </a>
+            <a href="{{ url_for('training_power_platform') }}" class="{% if request.path == url_for('training_power_platform') %}active{% endif %}">
+                <i class="fab fa-microsoft"></i> Power Platform
+            </a>
+            <a href="{{ url_for('training_cybersecurity') }}" class="{% if request.path == url_for('training_cybersecurity') %}active{% endif %}">
+                <i class="fas fa-shield-alt"></i> Cybersecurity
+            </a>
+            <a href="{{ url_for('data_analytics_page') }}" class="{% if request.path == url_for('data_analytics_page') %}active{% endif %}">
+                <i class="fas fa-chart-line"></i> Data Analytics
+            </a>
+            <a href="{{ url_for('teachers_page') }}" class="{% if request.path == url_for('teachers_page') %}active{% endif %}">
+                <i class="fas fa-chalkboard-teacher"></i> Teachers
+            </a>
+            <a href="{{ url_for('research_support_page') }}" class="{% if request.path == url_for('research_support_page') %}active{% endif %}">
+                <i class="fas fa-microscope"></i> Research Support
+            </a>
         </nav>
 
         <!-- Flash Messages -->
@@ -967,19 +998,44 @@
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Map Container - Top of Footer -->
+    <!-- ===== GLOBAL REVIEWS SECTION ===== -->
+    <div class="page-wrapper">
+        <div class="reviews-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap;">
+                <h2 style="font-size: 2rem; color: #002868;">What Our Customers Say</h2>
+                <div id="averageRatingDisplay" style="background: white; padding: 0.8rem 1.5rem; border-radius: 60px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                    <span style="font-weight: 600;">Average Rating:</span>
+                    <span id="globalAvgStars" style="color: #f2b341;">★★★★★</span>
+                    <span id="globalAvgRatingValue">0.0</span> 
+                    <span style="color: #666;">(from <span id="globalTotalReviewsCount">0</span> reviews)</span>
+                </div>
+            </div>
+            
+            <div id="globalReviewsList" style="display: grid; gap: 1.5rem;">
+                <div class="text-center py-5">
+                    <i class="fas fa-spinner fa-spin fa-2x" style="color: #4169E1;"></i>
+                    <p>Loading reviews...</p>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <button id="globalLoadMoreReviews" class="btn btn-outline-primary load-more-btn" style="display: none;">Load More Reviews</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Container -->
     <div class="map-container">
         <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3102.123456789!2d-77.0075!3d38.9779!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89b7c123456789%3A0x123456789!2s7513%20Maple%20Ave%2C%20Takoma%20Park%2C%20MD%2020912!5e0!3m2!1sen!2sus!4v1234567890" 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3104.2!2d-77.0365!3d38.935!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89b7c123456789%3A0x123456789!2s3636+16th+St+NW%2C+Washington%2C+DC+20010!5e0!3m2!1sen!2sus!4v1" 
             allowfullscreen="" 
             loading="lazy">
         </iframe>
     </div>
 
-    <!-- Footer - 4 Grid Layout -->
+    <!-- Footer -->
     <div class="footer">
         <div class="footer-grid">
-            <!-- Column 1: Company Info -->
             <div class="footer-col">
                 <img src="https://github.com/Tesfay-Tesfu/Mella-Technollogy-LLC-Python-Course/blob/main/S11.png?raw=true" 
                      alt="SOLI MICROLINK Logo" 
@@ -995,22 +1051,20 @@
                 </div>
             </div>
             
-            <!-- Column 2: Quick Links -->
             <div class="footer-col">
                 <h4>Quick Links</h4>
                 <ul class="footer-links">
                     <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="{{ url_for('teachers_page') }}"><i class="fas fa-chalkboard-teacher"></i> Teachers</a></li>
-                    <li><a href="{{ url_for('data_analytics_page') }}"><i class="fas fa-chart-line"></i> Data Analytics</a></li>
-                    <li><a href="{{ url_for('research_support_page') }}"><i class="fas fa-microscope"></i> Research Support</a></li>
                     <li><a href="{{ url_for('training_ai_ml') }}"><i class="fas fa-robot"></i> AI & ML</a></li>
                     <li><a href="{{ url_for('training_power_platform') }}"><i class="fab fa-microsoft"></i> Power Platform</a></li>
                     <li><a href="{{ url_for('training_cybersecurity') }}"><i class="fas fa-shield-alt"></i> Cybersecurity</a></li>
+                    <li><a href="{{ url_for('data_analytics_page') }}"><i class="fas fa-chart-line"></i> Data Analytics</a></li>
+                    <li><a href="{{ url_for('teachers_page') }}"><i class="fas fa-chalkboard-teacher"></i> Teachers</a></li>
+                    <li><a href="{{ url_for('research_support_page') }}"><i class="fas fa-microscope"></i> Research Support</a></li>
                     <li><a href="{{ url_for('contact_page') }}"><i class="fas fa-address-book"></i> Contacts</a></li>
                 </ul>
             </div>
             
-            <!-- Column 3: Support Links -->
             <div class="footer-col">
                 <h4>Support</h4>
                 <ul class="footer-links">
@@ -1022,7 +1076,6 @@
                 </ul>
             </div>
             
-            <!-- Column 4: Professional Developer Box -->
             <div class="footer-col">
                 <div class="developer-box">
                     <div class="developer-title">
@@ -1081,7 +1134,6 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-    <!-- Initialize AOS -->
     <script>
         AOS.init({
             duration: 800,
@@ -1090,7 +1142,6 @@
         });
     </script>
 
-    <!-- Hamburger Menu Script -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const toggleBtn = document.getElementById('mobileNavToggle');
@@ -1127,7 +1178,6 @@
     });
     </script>
 
-    <!-- Auto-update cart count -->
     <script>
     function updateCartCount() {
         fetch('{{ url_for("cart_count") }}')
@@ -1145,13 +1195,168 @@
             });
     }
 
-    // Update cart count every 30 seconds
     setInterval(updateCartCount, 30000);
 
-    // Also update when page becomes visible again
     document.addEventListener('visibilitychange', function() {
         if (!document.hidden) {
             updateCartCount();
+        }
+    });
+    </script>
+
+    <script>
+    let globalCurrentPage = 1;
+    let globalTotalReviews = 0;
+
+    function loadGlobalReviews(page = 1) {
+        fetch('/get-approved-reviews?page=' + page + '&limit=6')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayGlobalReviews(data.reviews);
+                    globalTotalReviews = data.total;
+                    document.getElementById('globalTotalReviewsCount').innerText = globalTotalReviews;
+                    
+                    const avg = data.average_rating || 0;
+                    document.getElementById('globalAvgRatingValue').innerText = avg.toFixed(1);
+                    
+                    let starsHtml = '';
+                    let fullStars = Math.floor(avg);
+                    let hasHalfStar = (avg % 1) >= 0.5;
+                    
+                    for (let i = 0; i < fullStars; i++) {
+                        starsHtml += '<i class="fas fa-star"></i>';
+                    }
+                    if (hasHalfStar) {
+                        starsHtml += '<i class="fas fa-star-half-alt"></i>';
+                    }
+                    for (let i = starsHtml.length / 12; i < 5; i++) {
+                        starsHtml += '<i class="far fa-star"></i>';
+                    }
+                    document.getElementById('globalAvgStars').innerHTML = starsHtml;
+                    
+                    if (data.has_more) {
+                        document.getElementById('globalLoadMoreReviews').style.display = 'inline-block';
+                    } else {
+                        document.getElementById('globalLoadMoreReviews').style.display = 'none';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('globalReviewsList').innerHTML = '<div class="text-center py-5"><p class="text-danger">Error loading reviews. Please refresh the page.</p></div>';
+            });
+    }
+
+    function displayGlobalReviews(reviews) {
+        const container = document.getElementById('globalReviewsList');
+        
+        if (!reviews || reviews.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-comment-dots fa-3x mb-3" style="color: #4169E1;"></i>
+                    <h4>No reviews yet</h4>
+                    <p>Be the first to leave a review about your experience!</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '';
+        for (let i = 0; i < reviews.length; i++) {
+            const review = reviews[i];
+            let starsHtml = '';
+            for (let s = 0; s < review.rating; s++) {
+                starsHtml += '<i class="fas fa-star" style="color: #f2b341;"></i>';
+            }
+            for (let s = review.rating; s < 5; s++) {
+                starsHtml += '<i class="far fa-star" style="color: #f2b341;"></i>';
+            }
+            
+            html += `
+                <div class="review-card">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; margin-bottom: 1rem;">
+                        <div>
+                            <strong style="font-size: 1.1rem; color: #002868;">${escapeHtml(review.customer_name)}</strong>
+                        </div>
+                        <div class="review-stars">${starsHtml}</div>
+                    </div>
+                    <p style="line-height: 1.6; color: #1e2f4d;">${escapeHtml(review.comment)}</p>
+                    <small style="color: #999;">${review.created_at}</small>
+                </div>
+            `;
+        }
+        
+        container.innerHTML = html;
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    document.getElementById('globalLoadMoreReviews').addEventListener('click', function() {
+        globalCurrentPage++;
+        fetch('/get-approved-reviews?page=' + globalCurrentPage + '&limit=6')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.reviews.length > 0) {
+                    appendGlobalReviews(data.reviews);
+                    if (!data.has_more) {
+                        document.getElementById('globalLoadMoreReviews').style.display = 'none';
+                    }
+                } else {
+                    document.getElementById('globalLoadMoreReviews').style.display = 'none';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+    function appendGlobalReviews(reviews) {
+        const container = document.getElementById('globalReviewsList');
+        let html = container.innerHTML;
+        
+        for (let i = 0; i < reviews.length; i++) {
+            const review = reviews[i];
+            let starsHtml = '';
+            for (let s = 0; s < review.rating; s++) {
+                starsHtml += '<i class="fas fa-star" style="color: #f2b341;"></i>';
+            }
+            for (let s = review.rating; s < 5; s++) {
+                starsHtml += '<i class="far fa-star" style="color: #f2b341;"></i>';
+            }
+            
+            html += `
+                <div class="review-card">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; margin-bottom: 1rem;">
+                        <div>
+                            <strong style="font-size: 1.1rem; color: #002868;">${escapeHtml(review.customer_name)}</strong>
+                        </div>
+                        <div class="review-stars">${starsHtml}</div>
+                    </div>
+                    <p style="line-height: 1.6; color: #1e2f4d;">${escapeHtml(review.comment)}</p>
+                    <small style="color: #999;">${review.created_at}</small>
+                </div>
+            `;
+        }
+        
+        container.innerHTML = html;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadGlobalReviews(1);
+        
+        if (document.querySelector('.hero-swiper')) {
+            const swiper = new Swiper('.hero-swiper', {
+                loop: true,
+                autoplay: { delay: 5000, disableOnInteraction: false },
+                pagination: { el: '.swiper-pagination', clickable: true },
+                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+                effect: 'fade',
+                speed: 800,
+            });
         }
     });
     </script>

@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Admin Panel - Afro-Merica{% endblock %}</title>
+    <title>{% block title %}Admin Panel - SOLI MICROLINK{% endblock %}</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,84 +15,135 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- jQuery (required for Bootstrap) -->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     
-    <!-- Bootstrap 5 JS Bundle (includes Popper) -->
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
             background: #f4f8fe;
+            overflow-x: hidden;
         }
         
+        /* ===== SIDEBAR WITH SCROLL ===== */
         .sidebar {
             background: #002868;
-            min-height: 100vh;
             color: white;
             position: fixed;
-            width: 250px;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            z-index: 1000;
             overflow-y: auto;
+            overflow-x: hidden;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Custom scrollbar for sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: #001a4a;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #BF0A30;
+            border-radius: 3px;
         }
         
         .sidebar-logo {
-            padding: 2rem;
+            padding: 1.5rem;
             text-align: center;
             border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: #002868;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
         
         .sidebar-logo img {
-            max-height: 60px;
-            max-width: 100%;
+            max-height: 50px;
         }
         
         .sidebar-logo h5 {
             color: white;
             margin-top: 0.5rem;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
         
         .sidebar-menu {
-            padding: 1.5rem 0;
+            padding: 1rem 0 2rem 0;
         }
         
         .sidebar-menu a {
-            display: block;
-            padding: 0.8rem 2rem;
+            display: flex;
+            align-items: center;
+            padding: 0.7rem 1.5rem;
             color: rgba(255,255,255,0.8);
             text-decoration: none;
-            transition: 0.2s;
-            font-size: 0.95rem;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            gap: 12px;
         }
         
         .sidebar-menu a:hover,
         .sidebar-menu a.active {
             background: rgba(255,255,255,0.1);
             color: white;
-            border-left: 4px solid #BF0A30;
+            border-left: 3px solid #BF0A30;
         }
         
         .sidebar-menu a i {
-            width: 25px;
-            margin-right: 10px;
+            width: 22px;
+            text-align: center;
             color: #BF0A30;
+            font-size: 1rem;
         }
         
+        .sidebar-menu hr {
+            margin: 0.8rem 1.5rem;
+            border-color: rgba(255,255,255,0.1);
+        }
+        
+        /* Section headers */
+        .sidebar-section {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.4);
+            margin-top: 0.5rem;
+        }
+        
+        /* Main Content */
         .main-content {
-            margin-left: 250px;
-            padding: 2rem;
+            margin-left: 280px;
+            padding: 1.5rem;
+            min-height: 100vh;
         }
         
         .top-bar {
             background: white;
-            border-radius: 60px;
-            padding: 1rem 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);
+            border-radius: 30px;
+            padding: 0.8rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
         }
         
         .user-info {
@@ -101,8 +153,8 @@
         }
         
         .user-info .avatar {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             background: #eef2f8;
             display: flex;
@@ -114,67 +166,37 @@
         .logout-btn {
             color: #BF0A30;
             text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .logout-btn:hover {
-            text-decoration: underline;
+            font-weight: 500;
         }
         
         .card {
             border: none;
-            border-radius: 30px;
-            box-shadow: 0 10px 20px -10px rgba(0,40,104,0.1);
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
         
         .btn-primary {
             background: #002868;
             border: none;
-            border-radius: 60px;
-            padding: 0.5rem 1.5rem;
-        }
-        
-        .btn-primary:hover {
-            background: #1a4c7a;
+            border-radius: 50px;
+            padding: 0.4rem 1.2rem;
         }
         
         .btn-danger {
             background: #BF0A30;
             border: none;
-            border-radius: 60px;
-            padding: 0.5rem 1.5rem;
-        }
-        
-        .btn-danger:hover {
-            background: #8f0824;
-        }
-        
-        .table th {
-            border-top: none;
-            color: #666;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .badge {
-            padding: 0.5rem 1rem;
-            border-radius: 60px;
-            font-weight: 500;
+            border-radius: 50px;
         }
         
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
-                min-height: auto;
                 position: relative;
+                height: auto;
+                min-height: auto;
             }
             .main-content {
                 margin-left: 0;
-            }
-            .top-bar {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
             }
         }
     </style>
@@ -192,9 +214,12 @@
         </div>
         
         <div class="sidebar-menu">
+            <div class="sidebar-section">MAIN</div>
             <a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
                 <i class="fas fa-tachometer-alt"></i> Dashboard
             </a>
+            
+            <div class="sidebar-section">MANAGEMENT</div>
             <a href="{{ url_for('admin_teachers') }}" class="{% if request.endpoint in ['admin_teachers', 'admin_add_teacher', 'admin_edit_teacher'] %}active{% endif %}">
                 <i class="fas fa-chalkboard-teacher"></i> Teachers
             </a>
@@ -210,11 +235,27 @@
             <a href="{{ url_for('admin_time_blocks') }}" class="{% if request.endpoint == 'admin_time_blocks' %}active{% endif %}">
                 <i class="fas fa-clock"></i> Time Blocks
             </a>
-            <!-- NEW SETTINGS LINK -->
+            
+            <div class="sidebar-section">CONTENT</div>
+            <a href="{{ url_for('admin_faqs') }}" class="{% if request.endpoint in ['admin_faqs', 'admin_add_faq', 'admin_edit_faq'] %}active{% endif %}">
+                <i class="fas fa-question-circle"></i> FAQs
+            </a>
+            <a href="{{ url_for('admin_policies') }}" class="{% if request.endpoint in ['admin_policies', 'admin_add_policy', 'admin_edit_policy'] %}active{% endif %}">
+                <i class="fas fa-file-contract"></i> Policies
+            </a>
+            
+            <!-- ===== ABOUT US LINK ===== -->
+            <a href="{{ url_for('admin_about_edit') }}" class="{% if request.endpoint == 'admin_about' %}active{% endif %}">
+                <i class="fas fa-info-circle"></i> About Us
+            </a>
+            
             <a href="{{ url_for('admin_settings') }}" class="{% if request.endpoint == 'admin_settings' %}active{% endif %}">
                 <i class="fas fa-cog"></i> Settings
             </a>
-            <hr style="border-color: rgba(255,255,255,0.1); margin: 1rem 0;">
+            
+            <hr>
+            
+            <div class="sidebar-section">SYSTEM</div>
             <a href="{{ url_for('index') }}" target="_blank">
                 <i class="fas fa-globe"></i> View Website
             </a>

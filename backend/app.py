@@ -1,5 +1,6 @@
+
 """
-Main Flask Application for SOLI MICROLINK - Render.com Production Version
+Main Flask Application for SOLI MICROLINK - PostgreSQL Version for Render
 """
 import os
 import json
@@ -11,36 +12,61 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import stripe
 import pytz
 from sqlalchemy.exc import OperationalError
+import cloudinary
+import cloudinary
+import cloudinary.uploader
+from cloudinary.utils import cloudinary_url
+from cloudinary.utils import cloudinary_url
 
-# Load environment variables from .env file (local development only)
-# On Render, these will come from environment variables
+
+# Load environment variables from .env file
 load_dotenv()
 
-# Get absolute paths for templates and static files
-backend_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.dirname(backend_dir)
-frontend_dir = os.path.join(project_root, 'frontend')
-
-# Initialize Flask app with absolute paths
-app = Flask(__name__,
-            template_folder=os.path.join(frontend_dir, 'templates'),
-            static_folder=os.path.join(frontend_dir, 'static'))
+# Initialize Flask app
+app = Flask(__name__, 
+            template_folder='../frontend/templates',
+            static_folder='../frontend/static')
 
 # ==================== CONFIGURATION ====================
-# Secret Key - MUST be set in Render environment variables
+
+# Secret Key
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 
-# Database - Use PostgreSQL on Render, SQLite for local development
-database_url = os.environ.get('DATABASE_URL', 'sqlite:///simple_solimicrolink.db')
+# ==================== DATABASE CONFIGURATION - FORCE POSTGRESQL ON RENDER ====================
+import os
 
-# Fix for Render's PostgreSQL URL (starts with postgres://)
+# Get database URL from environment (MUST be set on Render)
+database_url = os.environ.get('DATABASE_URL')
+
+# Check if running on Render
+IS_RENDER = os.environ.get('RENDER', False)
+
+# On Render, PostgreSQL is REQUIRED
+if IS_RENDER and not database_url:
+    print("❌ CRITICAL ERROR: DATABASE_URL not set!")
+    print("Please add DATABASE_URL environment variable in Render dashboard")
+    raise Exception("DATABASE_URL environment variable is required on Render")
+
+# Fix Render's PostgreSQL URL format (postgres:// -> postgresql://)
 if database_url and database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
 
+# For LOCAL development only - fallback to SQLite
+if not database_url:
+    # Local development path
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    project_root = os.path.dirname(basedir)
+    database_path = os.path.join(project_root, 'instance', 'simple_solimicrolink.db')
+    database_url = f'sqlite:///{database_path}'
+    print("⚠️ WARNING: Using SQLite (local development mode only)")
+    print("⚠️ Data will NOT persist if deployed to Render without DATABASE_URL")
+
+# Configure the database
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
@@ -49,41 +75,78 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'pool_pre_ping': True,
 }
 
-print(f"📁 Database type: {'PostgreSQL' if 'postgresql' in database_url else 'SQLite'}")
-print(f"📁 Database URL: {database_url.split('@')[0] if '@' in database_url else database_url}")
+# Log database connection info (hide password if present)
+db_type = 'PostgreSQL' if 'postgresql' in database_url else 'SQLite'
+db_display_url = database_url.split('@')[-1] if '@' in database_url else database_url
+print(f"✅ Database type: {db_type}")
+print(f"✅ Connected to: {db_display_url}")
+print(f"✅ Running on Render: {IS_RENDER}")
 
-# Stripe Configuration - Use environment variables (no defaults in production)
-app.config['STRIPE_PUBLIC_KEY'] = os.environ.get('STRIPE_PUBLIC_KEY', '')
-app.config['STRIPE_SECRET_KEY'] = os.environ.get('STRIPE_SECRET_KEY', '')
-if app.config['STRIPE_SECRET_KEY']:
-    stripe.api_key = app.config['STRIPE_SECRET_KEY']
+# Stripe Configuration - Using your provided keys
+app.config['STRIPE_PUBLIC_KEY'] = os.environ.get('STRIPE_PUBLIC_KEY')
+app.config['STRIPE_SECRET_KEY'] = os.environ.get('STRIPE_SECRET_KEY')
+stripe.api_key = app.config['STRIPE_SECRET_KEY']
 
-# Email Configuration - Use environment variables only (no hardcoded defaults)
-app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
-app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
-app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True').lower() == 'true'
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+# Email Configuration - Using Gmail with SSL (more reliable)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465  # Changed from 587 to 465
+app.config['MAIL_USE_SSL'] = True  # Changed from TLS to SSL
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USERNAME'] = 'tesfaymn402@gmail.com'
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', app.config['MAIL_USERNAME'])
+app.config['MAIL_DEFAULT_SENDER'] = 'tesfaymn402@gmail.com'
+app.config['MAIL_SUPPRESS_SEND'] = False
 
-# Admin Email - Use environment variable
-app.config['ADMIN_EMAIL'] = os.environ.get('ADMIN_EMAIL', 'admin@soli-microlink.com')
+# Admin Email
+app.config['ADMIN_EMAIL'] = 'tesfaymn402@gmail.com'
 
-# Base URL - Use Render's external URL in production
-app.config['BASE_URL'] = os.environ.get('RENDER_EXTERNAL_URL', os.environ.get('BASE_URL', 'http://localhost:5011'))
+# Admin Email - Using your email for notifications
+app.config['ADMIN_EMAIL'] = os.environ.get('ADMIN_EMAIL', 'tesfaymn402@gmail.com')
 
-# Warn if critical environment variables are missing
-if not app.config['MAIL_USERNAME'] or not app.config['MAIL_PASSWORD']:
-    print("⚠️  WARNING: Email credentials not set in environment variables")
-if not app.config['STRIPE_SECRET_KEY']:
-    print("⚠️  WARNING: Stripe secret key not set in environment variables")
-if app.config['SECRET_KEY'] == 'dev-secret-key-change-in-production':
-    print("⚠️  WARNING: Using default SECRET_KEY - set a secure one in production!")
+# Base URL (for production)
+app.config['BASE_URL'] = os.environ.get('BASE_URL', 'http://localhost:5011')
 
-print(f"📧 Email configured for: {app.config['MAIL_USERNAME'] or 'Not set'}")
+print(f"📧 Email configured for: {app.config['MAIL_USERNAME']}")
 print(f"📧 Admin email: {app.config['ADMIN_EMAIL']}")
-print(f"💳 Stripe configured: {'Yes' if app.config['STRIPE_PUBLIC_KEY'] else 'No'}")
-print(f"🌐 Base URL: {app.config['BASE_URL']}")
+print(f"💳 Stripe configured with public key: {app.config['STRIPE_PUBLIC_KEY'][:20]}...")
+
+# ==================== FILE UPLOAD CONFIGURATION ====================
+
+# Detect if running on Render
+# ==================== FILE UPLOAD CONFIGURATION WITH CLOUDINARY ====================
+
+# Configure Cloudinary with YOUR credentials
+cloudinary.config( 
+    cloud_name = "dnxsqsccu",
+    api_key = "168523342961774",
+    api_secret = os.environ.get('CLOUDINARY_API_SECRET', ''),
+    secure = True
+)
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def upload_to_cloudinary(file, folder='solimicrolink'):
+    """Upload a file to Cloudinary and return the URL"""
+    try:
+        # Upload the file to Cloudinary
+        upload_result = cloudinary.uploader.upload(
+            file,
+            folder=folder,
+            transformation=[
+                {'width': 800, 'height': 600, 'crop': 'limit'},
+                {'quality': 'auto'},
+                {'fetch_format': 'auto'}
+            ]
+        )
+        return upload_result['secure_url']
+    except Exception as e:
+        print(f"❌ Cloudinary upload error: {e}")
+        return None
+
+print(f"✅ Cloudinary configured for cloud: {cloudinary.config().cloud_name}")
 
 # ===== TEMPLATE FILTERS =====
 @app.template_filter('from_json')
@@ -231,7 +294,7 @@ class CartItem(db.Model):
     __tablename__ = 'cart_items'
     
     id = db.Column(db.Integer, primary_key=True)
-    session_id = db.Column(db.String(100), nullable=True)  # Flask session ID (null for logged-in users)
+    session_id = db.Column(db.String(100), nullable=True)  # Flask session ID
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     service_id = db.Column(db.Integer, db.ForeignKey('services.id'), nullable=True)
     teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.id'), nullable=True)
@@ -347,8 +410,15 @@ class AboutUs(db.Model):
     mission = db.Column(db.Text)
     vision = db.Column(db.Text)
     values = db.Column(db.Text)  # JSON array
-    team_members = db.Column(db.Text)  # JSON array
+    team_members = db.Column(db.Text)  # JSON array - ADD THIS
     stats = db.Column(db.Text)  # JSON object
+    owner_name = db.Column(db.String(100), default='Selam Tesfay')
+    owner_title = db.Column(db.String(100), default='Founder & CEO')
+    owner_quote = db.Column(db.Text)
+    owner_photo_url = db.Column(db.String(500))
+    linkedin_url = db.Column(db.String(200))
+    twitter_url = db.Column(db.String(200))
+    facebook_url = db.Column(db.String(200))
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class Location(db.Model):
@@ -405,8 +475,33 @@ def init_db():
         except Exception as e:
             print(f"❌ Database initialization error: {e}")
 
+def seed_initial_data():
+    """Seed database with initial data if tables are empty"""
+    with app.app_context():
+        try:
+            import subprocess
+            import os
+            
+            # Check if services table is empty
+            if Service.query.count() == 0:
+                print("🌱 Seeding initial data...")
+                backend_dir = os.path.dirname(os.path.abspath(__file__))
+                result = subprocess.run(['python', 'seed_data.py'], cwd=backend_dir, capture_output=True, text=True)
+                if result.returncode == 0:
+                    print("✅ Initial data seeded successfully!")
+                else:
+                    print(f"⚠️ Seeding had issues: {result.stderr}")
+            else:
+                print("✅ Database already has data, skipping seed")
+                
+        except Exception as e:
+            print(f"⚠️ Seeding check failed: {e}")
+
 # Run database initialization
 init_db()
+
+# Run seed initial data
+seed_initial_data()
 
 # ==================== DECORATORS ====================
 
@@ -428,6 +523,7 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+
 # ==================== HELPER FUNCTIONS ====================
 
 def generate_booking_number():
@@ -437,12 +533,18 @@ def generate_booking_number():
     random_num = random.randint(1000, 9999)
     return f"BK-{timestamp}-{random_num}"
 
+def send_email_via_console(recipient, subject, body_html):
+    """Fallback function to print email to console"""
+    print(f"\n{'='*70}")
+    print(f"📧 EMAIL (would be sent to: {recipient})")
+    print(f"📋 Subject: {subject}")
+    print(f"{'='*70}")
+    print(body_html[:500] if len(body_html) > 500 else body_html)
+    print(f"{'='*70}\n")
+    return True
+
 def send_verification_email(user):
     """Send email verification link"""
-    if not app.config['MAIL_USERNAME'] or not app.config['MAIL_PASSWORD']:
-        print("⚠️ Email not configured - skipping verification email")
-        return False
-        
     token = user.generate_verification_token()
     db.session.commit()
     
@@ -486,6 +588,15 @@ def send_verification_email(user):
     </html>
     """
     
+    # Auto-verify in development
+    if 'localhost' in app.config['BASE_URL'] or '127.0.0.1' in app.config['BASE_URL']:
+        user.is_verified = True
+        user.verification_token = None
+        db.session.commit()
+        print(f"✅ Auto-verified {user.email} (development mode)")
+        send_email_via_console(user.email, "Verify Your SOLI MICROLINK Account", html_body)
+        return True
+    
     try:
         msg = Message(
             subject='Verify Your SOLI MICROLINK Account',
@@ -497,13 +608,11 @@ def send_verification_email(user):
         return True
     except Exception as e:
         print(f"❌ Email error: {e}")
-        return False
+        send_email_via_console(user.email, "Verify Your SOLI MICROLINK Account", html_body)
+        return True
 
 def send_welcome_email(user):
     """Send welcome email after verification"""
-    if not app.config['MAIL_USERNAME'] or not app.config['MAIL_PASSWORD']:
-        return False
-        
     html_body = f"""
     <!DOCTYPE html>
     <html>
@@ -566,13 +675,11 @@ def send_welcome_email(user):
         return True
     except Exception as e:
         print(f"❌ Email error: {e}")
-        return False
+        send_email_via_console(user.email, "Welcome to SOLI MICROLINK!", html_body)
+        return True
 
 def send_password_reset_email(user):
     """Send password reset link"""
-    if not app.config['MAIL_USERNAME'] or not app.config['MAIL_PASSWORD']:
-        return False
-        
     token = user.generate_reset_token()
     db.session.commit()
     
@@ -630,57 +737,12 @@ def send_password_reset_email(user):
         return False
 
 def send_booking_notification(booking):
-    """Send email notification for new booking"""
-    if not app.config['MAIL_USERNAME'] or not app.config['MAIL_PASSWORD']:
-        return False
-        
+    """Send email notification to admin using direct SMTP"""
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    
     try:
-        subject = f"New Booking Confirmation - {booking.booking_number}"
-        
-        # Get service/teacher details
-        item_name = "Consultation"
-        if booking.service_rel:
-            item_name = booking.service_rel.name
-        elif booking.teacher_rel:
-            item_name = f"Session with {booking.teacher_rel.name}"
-        
-        html_body = f"""
-        <h2>New Booking Received</h2>
-        <p><strong>Booking #:</strong> {booking.booking_number}</p>
-        <p><strong>Customer:</strong> {booking.customer_name}</p>
-        <p><strong>Email:</strong> {booking.customer_email}</p>
-        <p><strong>Phone:</strong> {booking.customer_phone or 'Not provided'}</p>
-        <p><strong>Service:</strong> {item_name}</p>
-        <p><strong>Date:</strong> {booking.booking_date.strftime('%B %d, %Y')}</p>
-        <p><strong>Time:</strong> {booking.booking_time}</p>
-        <p><strong>Duration:</strong> {booking.duration_hours} hour(s)</p>
-        <p><strong>Amount:</strong> ${booking.amount}</p>
-        <p><strong>Status:</strong> {booking.status}</p>
-        <p><strong>Payment:</strong> {booking.payment_status}</p>
-        <p><strong>Notes:</strong> {booking.notes or 'None'}</p>
-        <hr>
-        <p><a href="{app.config['BASE_URL']}/admin/booking/{booking.id}">View in Admin Panel</a></p>
-        """
-        
-        msg = Message(
-            subject=subject,
-            recipients=[app.config['ADMIN_EMAIL']],
-            html=html_body
-        )
-        mail.send(msg)
-        print(f"✅ Booking notification sent to admin")
-        return True
-    except Exception as e:
-        print(f"❌ Email error: {e}")
-        return False
-
-def send_booking_confirmation(booking):
-    """Send booking confirmation to customer"""
-    if not app.config['MAIL_USERNAME'] or not app.config['MAIL_PASSWORD']:
-        return False
-        
-    try:
-        # Get service/teacher details
         item_name = "Consultation"
         if booking.service_rel:
             item_name = booking.service_rel.name
@@ -692,36 +754,96 @@ def send_booking_confirmation(booking):
         <html>
         <head>
             <style>
-                body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                body {{ font-family: Arial, sans-serif; }}
                 .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-                .header {{ background: linear-gradient(135deg, #002868, #1a4c7a); color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }}
-                .content {{ background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }}
-                .details {{ background: white; padding: 20px; border-radius: 10px; margin: 20px 0; }}
-                .button {{ display: inline-block; background: #BF0A30; color: white; padding: 10px 25px; text-decoration: none; border-radius: 30px; }}
-                .footer {{ text-align: center; margin-top: 20px; color: #666; font-size: 12px; }}
+                .header {{ background: #BF0A30; color: white; padding: 20px; text-align: center; }}
             </style>
         </head>
         <body>
             <div class="container">
                 <div class="header">
-                    <h1>Booking Confirmed!</h1>
+                    <h2>NEW BOOKING RECEIVED</h2>
                 </div>
                 <div class="content">
-                    <h2>Thank you for your booking, {booking.customer_name}!</h2>
-                    <p>Your booking has been confirmed. Here are the details:</p>
-                    
+                    <p><strong>Booking #:</strong> {booking.booking_number}</p>
+                    <p><strong>Customer:</strong> {booking.customer_name}</p>
+                    <p><strong>Email:</strong> {booking.customer_email}</p>
+                    <p><strong>Phone:</strong> {booking.customer_phone or 'Not provided'}</p>
+                    <p><strong>Service:</strong> {item_name}</p>
+                    <p><strong>Date:</strong> {booking.booking_date.strftime('%B %d, %Y')}</p>
+                    <p><strong>Time:</strong> {booking.booking_time}</p>
+                    <p><strong>Amount:</strong> ${booking.amount}</p>
+                    <hr>
+                    <p><a href="http://localhost:5011/admin/booking/{booking.id}">View in Admin Panel</a></p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = f'New Booking - {booking.booking_number}'
+        msg['From'] = 'tesfaymn402@gmail.com'
+        msg['To'] = 'tesfaymn402@gmail.com'
+        msg.attach(MIMEText(html_body, 'html'))
+        
+        print(f"📧 Sending admin notification")
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login('tesfaymn402@gmail.com', 'hkdc ohxr ptoo xmhz')
+            server.send_message(msg)
+        
+        print(f"✅ Admin notification sent")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Admin notification error: {e}")
+        return False
+
+def send_booking_confirmation(booking):
+    """Send booking confirmation using direct SMTP"""
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    
+    try:
+        item_name = "Consultation"
+        if booking.service_rel:
+            item_name = booking.service_rel.name
+        elif booking.teacher_rel:
+            item_name = f"Session with {booking.teacher_rel.name}"
+        
+        html_body = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; }}
+                .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                .header {{ background: #002868; color: white; padding: 20px; text-align: center; }}
+                .content {{ padding: 20px; }}
+                .details {{ background: #f5f5f5; padding: 15px; border-radius: 10px; }}
+                .footer {{ text-align: center; padding: 10px; color: #666; font-size: 12px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h2>SOLI MICROLINK</h2>
+                    <h3>Booking Confirmation</h3>
+                </div>
+                <div class="content">
+                    <h3>Hello {booking.customer_name},</h3>
+                    <p>Thank you for your booking! Your session has been confirmed.</p>
                     <div class="details">
                         <p><strong>Booking #:</strong> {booking.booking_number}</p>
                         <p><strong>Service:</strong> {item_name}</p>
                         <p><strong>Date:</strong> {booking.booking_date.strftime('%B %d, %Y')}</p>
                         <p><strong>Time:</strong> {booking.booking_time}</p>
-                        <p><strong>Duration:</strong> {booking.duration_hours} hour(s)</p>
+                        <p><strong>Duration:</strong> {booking.duration_hours} hours</p>
                         <p><strong>Amount:</strong> ${booking.amount}</p>
                     </div>
-                    
-                    <p>You can view your bookings in your <a href="{app.config['BASE_URL']}/profile">profile</a>.</p>
-                    
-                    <p>If you have any questions, please contact us at <a href="mailto:{app.config['ADMIN_EMAIL']}">{app.config['ADMIN_EMAIL']}</a></p>
+                    <p>You can view all your bookings in your profile.</p>
+                    <p>If you have any questions, please contact us.</p>
                 </div>
                 <div class="footer">
                     <p>&copy; 2026 SOLI MICROLINK. All rights reserved.</p>
@@ -731,16 +853,22 @@ def send_booking_confirmation(booking):
         </html>
         """
         
-        msg = Message(
-            subject=f'Booking Confirmation - {booking.booking_number}',
-            recipients=[booking.customer_email],
-            html=html_body
-        )
-        mail.send(msg)
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = f'Booking Confirmation - {booking.booking_number}'
+        msg['From'] = 'tesfaymn402@gmail.com'
+        msg['To'] = booking.customer_email
+        msg.attach(MIMEText(html_body, 'html'))
+        
+        print(f"📧 Sending booking confirmation to {booking.customer_email}")
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login('tesfaymn402@gmail.com', 'hkdc ohxr ptoo xmhz')
+            server.send_message(msg)
+        
         print(f"✅ Booking confirmation sent to {booking.customer_email}")
         return True
+        
     except Exception as e:
-        print(f"❌ Email error: {e}")
+        print(f"❌ Booking confirmation error: {e}")
         return False
 
 def get_available_slots(teacher_id=None, service_id=None, date=None):
@@ -861,25 +989,22 @@ def register():
             flash('Email already registered. Please login.', 'warning')
             return redirect(url_for('login'))
         
-        # Create new user
+        # Create new user - AUTO VERIFIED
         user = User(
             email=email,
             full_name=full_name,
-            phone=phone
+            phone=phone,
+            is_verified=True
         )
         user.set_password(password)
         
         db.session.add(user)
         db.session.commit()
         
-        # Send verification email
-        if send_verification_email(user):
-            flash('Registration successful! Please check your email to verify your account.', 'success')
-        else:
-            flash('Registration successful! However, we could not send verification email. Please contact support.', 'warning')
-        
+        flash('Registration successful! You can now login.', 'success')
         return redirect(url_for('login'))
     
+    # Only ONE return statement here
     return render_template('register.html')
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -933,6 +1058,74 @@ def logout():
     session.pop('user_email', None)
     flash('You have been logged out', 'info')
     return redirect(url_for('index'))
+
+# ==================== ABOUT US ADMIN ROUTES ====================
+@app.route('/admin/about-edit')
+@admin_required
+def admin_about_edit():
+    """Edit About Us page"""
+    about = AboutUs.query.first()
+    if not about:
+        about = AboutUs(
+            content='SOLI MICROLINK is a premier educational platform...',
+            mission='To empower students through quality education...',
+            vision='To become Africa\'s leading educational platform...'
+        )
+        db.session.add(about)
+        db.session.commit()
+    return render_template('admin/about_edit.html', about=about)
+
+@app.route('/admin/about-update', methods=['POST'])
+@admin_required
+def admin_about_update():
+    """Update About Us content"""
+    about = AboutUs.query.first()
+    if not about:
+        about = AboutUs()
+    
+    # Basic info
+    about.title = request.form.get('title')
+    about.content = request.form.get('content')
+    about.mission = request.form.get('mission')
+    about.vision = request.form.get('vision')
+    
+    # Owner info
+    about.owner_name = request.form.get('owner_name')
+    about.owner_title = request.form.get('owner_title')
+    about.owner_quote = request.form.get('owner_quote')
+    about.owner_photo_url = request.form.get('owner_photo_url')
+    
+    # Social links
+    about.linkedin_url = request.form.get('linkedin_url')
+    about.twitter_url = request.form.get('twitter_url')
+    about.facebook_url = request.form.get('facebook_url')
+    
+    # Core values
+    values = request.form.get('values', '').split('\n')
+    about.values = json.dumps([v.strip() for v in values if v.strip()])
+    
+    # Stats
+    stats = {
+        'teachers': request.form.get('stat_teachers', '24+'),
+        'courses': request.form.get('stat_courses', '30+'),
+        'students': request.form.get('stat_students', '500+'),
+        'countries': request.form.get('stat_countries', '10+')
+    }
+    about.stats = json.dumps(stats)
+    
+    # Handle photo upload
+    if 'owner_photo' in request.files:
+        file = request.files['owner_photo']
+        if file and file.filename and allowed_file(file.filename):
+            filename = secure_filename(f"owner_photo_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{file.filename}")
+            filepath = os.path.join(UPLOAD_FOLDER, filename)
+            file.save(filepath)
+            about.owner_photo_url = url_for('static', filename=f'uploads/{filename}', _external=True)
+    
+    db.session.add(about)
+    db.session.commit()
+    flash('About Us page updated successfully!', 'success')
+    return redirect(url_for('admin_about_edit'))
 
 @app.route('/verify-email/<token>')
 def verify_email(token):
@@ -1116,11 +1309,23 @@ def about_page():
     """About Us page"""
     about = AboutUs.query.first()
     if not about:
+        # Create default About Us entry if none exists
         about = AboutUs(
-            content="SOLI MICROLINK is a premier educational platform dedicated to empowering students and professionals through high-quality training in data analytics, research support, and expert tutoring."
+            title='About SOLI MICROLINK',
+            content="SOLI MICROLINK is a premier educational platform dedicated to empowering students and professionals through high-quality training in data analytics, research support, and expert tutoring.",
+            mission="To empower students and professionals with cutting-edge skills and knowledge that transform their careers and lives.",
+            vision="To become Africa's leading educational platform, bridging the gap between academic excellence and industry demands.",
+            owner_name="Selam Tesfay",
+            owner_title="Founder & CEO",
+            owner_quote="Empowering the next generation of African innovators through quality education and research support.",
+            values=json.dumps(['Excellence', 'Innovation', 'Integrity', 'Accessibility']),
+            team_members=json.dumps([]),  # Empty array for team members
+            stats=json.dumps({'teachers': '24+', 'courses': '30+', 'students': '500+', 'countries': '10+'})
         )
+        db.session.add(about)
+        db.session.commit()
     
-    # Parse JSON fields
+    # Parse JSON fields safely
     values = []
     team = []
     stats = {}
@@ -1129,7 +1334,7 @@ def about_page():
         try:
             values = json.loads(about.values)
         except:
-            values = []
+            values = ['Excellence', 'Innovation', 'Integrity', 'Accessibility']
     
     if about.team_members:
         try:
@@ -1141,9 +1346,9 @@ def about_page():
         try:
             stats = json.loads(about.stats)
         except:
-            stats = {}
+            stats = {'teachers': '24+', 'courses': '30+', 'students': '500+', 'countries': '10+'}
     
-    return render_template('about.html', about=about, values=values, team=team, stats=stats)
+    return render_template('about.html', about=about, values=values, team=team, stats=stats)    
 
 @app.route('/contact')
 def contact_page():
@@ -1225,7 +1430,7 @@ def add_to_cart():
             else:
                 print(f"Adding new item to cart")
                 cart_item = CartItem(
-                    session_id=session_id,  # Will be None for logged-in users
+                    session_id=session_id,
                     user_id=session.get('user_id'),
                     service_id=item_id,
                     item_type='service',
@@ -1256,7 +1461,7 @@ def add_to_cart():
                     return jsonify({'success': False, 'error': f'Invalid date format: {booking_date}'}), 400
             
             cart_item = CartItem(
-                session_id=session_id,  # Will be None for logged-in users
+                session_id=session_id,
                 user_id=session.get('user_id'),
                 teacher_id=item_id,
                 item_type='teacher_booking',
@@ -1301,6 +1506,29 @@ def add_to_cart():
             'success': False, 
             'error': f'Internal server error: {error_msg}'
         }), 500
+
+
+@app.route('/test-email')
+def test_email():
+    """Test email sending"""
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    
+    try:
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = 'Test Email from SOLI MICROLINK'
+        msg['From'] = 'tesfaymn402@gmail.com'
+        msg['To'] = 'tesfayphysics@gmail.com'
+        msg.attach(MIMEText('<h2>Test Successful!</h2><p>Your email system is working!</p>', 'html'))
+        
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login('tesfaymn402@gmail.com', 'hkdc ohxr ptoo xmhz')
+            server.send_message(msg)
+        
+        return "✅ Email test sent successfully! Check tesfayphysics@gmail.com"
+    except Exception as e:
+        return f"❌ Error: {str(e)}"
 
 @app.route('/cart')
 def view_cart():
@@ -1395,33 +1623,46 @@ def checkout():
 @app.route('/process-checkout', methods=['POST'])
 def process_checkout():
     """Process checkout and create booking"""
+    print("\n" + "="*60)
+    print("🔍 PROCESS CHECKOUT - START")
+    print("="*60)
+    
+    # Get cart items
     if 'user_id' in session:
         cart_items = CartItem.query.filter_by(user_id=session['user_id']).all()
         user = User.query.get(session['user_id'])
         customer_name = user.full_name
         customer_email = user.email
         customer_phone = user.phone
+        print(f"Logged in user: {customer_name} ({customer_email})")
     elif 'cart_id' in session:
         cart_items = CartItem.query.filter_by(session_id=session['cart_id']).all()
         customer_name = request.form.get('customer_name')
         customer_email = request.form.get('customer_email')
         customer_phone = request.form.get('customer_phone')
+        print(f"Guest user: {customer_name} ({customer_email})")
     else:
         cart_items = []
+        print("No cart found!")
     
     if not cart_items:
         flash('Your cart is empty', 'warning')
         return redirect(url_for('view_cart'))
     
+    print(f"Cart items count: {len(cart_items)}")
     notes = request.form.get('notes', '')
-    
-    # Calculate total
-    total = sum(item.price * item.quantity for item in cart_items)
     
     # Create booking for each cart item
     bookings = []
     for item in cart_items:
         booking_number = generate_booking_number()
+        
+        # Get service name for email
+        service_name = "Consultation"
+        if item.service_id:
+            service = Service.query.get(item.service_id)
+            if service:
+                service_name = service.name
         
         booking = Booking(
             booking_number=booking_number,
@@ -1438,21 +1679,149 @@ def process_checkout():
             notes=notes
         )
         db.session.add(booking)
+        db.session.commit()  # Commit to get booking ID
+        
         bookings.append(booking)
         
-        # Send notification to admin
-        send_booking_notification(booking)
+        print(f"\n📧 SENDING EMAILS FOR BOOKING: {booking_number}")
         
-        # Send confirmation to customer
-        send_booking_confirmation(booking)
+        # Send email to CUSTOMER
+        try:
+            customer_html = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ background: #002868; color: white; padding: 20px; text-align: center; }}
+                    .content {{ padding: 20px; }}
+                    .details {{ background: #f5f5f5; padding: 15px; border-radius: 10px; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h2>SOLI MICROLINK</h2>
+                        <h3>Booking Confirmation</h3>
+                    </div>
+                    <div class="content">
+                        <h3>Hello {customer_name},</h3>
+                        <p>Thank you for your booking! Your session has been confirmed.</p>
+                        <div class="details">
+                            <p><strong>Booking #:</strong> {booking_number}</p>
+                            <p><strong>Service:</strong> {service_name}</p>
+                            <p><strong>Date:</strong> {booking.booking_date.strftime('%B %d, %Y')}</p>
+                            <p><strong>Time:</strong> {booking.booking_time}</p>
+                            <p><strong>Amount:</strong> ${booking.amount}</p>
+                        </div>
+                        <p>You can view all your bookings in your profile.</p>
+                        <p>If you have any questions, please contact us.</p>
+                    </div>
+                    <div class="footer">
+                        <p>&copy; 2026 SOLI MICROLINK</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            msg = Message(
+                subject=f'Booking Confirmation - {booking_number}',
+                recipients=[customer_email],
+                html=customer_html
+            )
+            mail.send(msg)
+            print(f"   ✅ Customer email sent to: {customer_email}")
+        except Exception as e:
+            print(f"   ❌ Customer email failed: {e}")
+        
+        # Send email to ADMIN
+        try:
+            admin_html = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ background: #BF0A30; color: white; padding: 20px; text-align: center; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h2>NEW BOOKING RECEIVED</h2>
+                    </div>
+                    <div class="content">
+                        <p><strong>Booking #:</strong> {booking_number}</p>
+                        <p><strong>Customer:</strong> {customer_name}</p>
+                        <p><strong>Email:</strong> {customer_email}</p>
+                        <p><strong>Phone:</strong> {customer_phone or 'Not provided'}</p>
+                        <p><strong>Service:</strong> {service_name}</p>
+                        <p><strong>Date:</strong> {booking.booking_date.strftime('%B %d, %Y')}</p>
+                        <p><strong>Time:</strong> {booking.booking_time}</p>
+                        <p><strong>Amount:</strong> ${booking.amount}</p>
+                        <hr>
+                        <p><a href="{app.config['BASE_URL']}/admin/booking/{booking.id}">View in Admin Panel</a></p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            msg = Message(
+                subject=f'New Booking - {booking_number}',
+                recipients=[app.config['ADMIN_EMAIL']],
+                html=admin_html
+            )
+            mail.send(msg)
+            print(f"   ✅ Admin notification sent to: {app.config['ADMIN_EMAIL']}")
+        except Exception as e:
+            print(f"   ❌ Admin email failed: {e}")
     
     # Clear cart
     for item in cart_items:
         db.session.delete(item)
     db.session.commit()
     
+    print(f"\n✅ Checkout complete! {len(bookings)} booking(s) created")
+    print("="*60 + "\n")
+    
     flash('Booking confirmed! Check your email for details.', 'success')
     return redirect(url_for('booking_confirmation', booking_id=bookings[0].id))
+
+@app.route('/test-booking-email')
+def test_booking_email():
+    """Test booking email directly"""
+    from datetime import date, datetime
+    
+    # Create a test booking
+    test_booking = Booking(
+        booking_number='TEST-001',
+        customer_name='Test User',
+        customer_email='tesfayphysics@gmail.com',
+        customer_phone='1234567890',
+        booking_type='service',
+        booking_date=date.today(),
+        booking_time='10:00',
+        amount=99.00,
+        status='confirmed',
+        payment_status='paid'
+    )
+    
+    # Add a mock service
+    class MockService:
+        name = 'Test Service'
+    test_booking.service_rel = MockService()
+    
+    # Try to send email
+    result = send_booking_confirmation(test_booking)
+    
+    if result:
+        return "✅ Test email sent! Check tesfayphysics@gmail.com"
+    else:
+        return "❌ Email failed! Check terminal for errors"
 
 @app.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
@@ -1650,6 +2019,211 @@ def get_reviews():
         'rating_info': rating_info
     })
 
+# ==================== PUBLIC REVIEW ROUTES ====================
+
+@app.route('/submit-public-review', methods=['POST'])
+def submit_public_review():
+    """Submit a review from homepage"""
+    try:
+        customer_name = request.json.get('customer_name')
+        customer_email = request.json.get('customer_email')
+        rating = request.json.get('rating')
+        comment = request.json.get('comment')
+        service_name = request.json.get('service_name', '')
+        
+        if not customer_name or not rating or not comment:
+            return jsonify({'success': False, 'error': 'Please fill in all required fields'}), 400
+        
+        review = Review(
+            user_id=None,
+            customer_name=customer_name,
+            customer_email=customer_email,
+            rating=int(rating),
+            comment=comment,
+            status='pending'
+        )
+        
+        db.session.add(review)
+        db.session.commit()
+        
+        # Send email notification to admin
+        try:
+            subject = f"New Website Review - Rating: {rating} stars"
+            html_body = f"""
+            <h2>New Review Submitted on Website</h2>
+            <p><strong>Reviewer:</strong> {customer_name}</p>
+            <p><strong>Email:</strong> {customer_email or 'Not provided'}</p>
+            <p><strong>Rating:</strong> {rating} stars</p>
+            <p><strong>Service:</strong> {service_name or 'General'}</p>
+            <p><strong>Comment:</strong> {comment}</p>
+            <hr>
+            <p><a href="{app.config['BASE_URL']}/admin/reviews">View in Admin Panel</a></p>
+            """
+            
+            msg = Message(
+                subject=subject,
+                recipients=[app.config['ADMIN_EMAIL']],
+                html=html_body
+            )
+            mail.send(msg)
+        except Exception as e:
+            print(f"Email error: {e}")
+        
+        return jsonify({'success': True, 'message': 'Thank you for your review!'})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/get-approved-reviews', methods=['GET'])
+def get_approved_reviews():
+    """Get approved reviews for homepage display with pagination"""
+    page = request.args.get('page', 1, type=int)
+    limit = request.args.get('limit', 10, type=int)
+    offset = (page - 1) * limit
+    
+    # Get approved reviews
+    query = Review.query.filter_by(status='approved').order_by(Review.created_at.desc())
+    total = query.count()
+    reviews = query.offset(offset).limit(limit).all()
+    
+    # Calculate average rating
+    all_approved = Review.query.filter_by(status='approved').all()
+    if all_approved:
+        avg_rating = sum(r.rating for r in all_approved) / len(all_approved)
+    else:
+        avg_rating = 0
+    
+    reviews_data = []
+    for review in reviews:
+        reviews_data.append({
+            'id': review.id,
+            'customer_name': review.customer_name,
+            'rating': review.rating,
+            'comment': review.comment,
+            'created_at': review.created_at.strftime('%B %d, %Y'),
+            'service_name': None  # Can be extended if you add service relation
+        })
+    
+    return jsonify({
+        'success': True,
+        'reviews': reviews_data,
+        'total': total,
+        'page': page,
+        'limit': limit,
+        'has_more': offset + limit < total,
+        'average_rating': round(avg_rating, 1)
+    })
+
+# ==================== PHOTO UPLOAD ROUTES ====================
+
+# Owner Photo Upload Route
+@app.route('/admin/upload-owner-photo', methods=['POST'])
+@admin_required
+def admin_upload_owner_photo():
+    """Upload owner photo to Cloudinary for About Us page"""
+    try:
+        if 'photo' not in request.files:
+            return jsonify({'success': False, 'error': 'No photo provided'}), 400
+        
+        file = request.files['photo']
+        
+        if file.filename == '':
+            return jsonify({'success': False, 'error': 'No photo selected'}), 400
+        
+        if not allowed_file(file.filename):
+            return jsonify({'success': False, 'error': 'Invalid file type. Please upload PNG, JPG, JPEG, GIF, or WEBP'}), 400
+        
+        # Upload to Cloudinary instead of local storage
+        photo_url = upload_to_cloudinary(file, folder='solimicrolink/owner')
+        
+        if not photo_url:
+            return jsonify({'success': False, 'error': 'Failed to upload to Cloudinary'}), 500
+        
+        # Update About Us record
+        about = AboutUs.query.first()
+        if not about:
+            about = AboutUs(content='')
+            db.session.add(about)
+        
+        about.owner_photo_url = photo_url
+        db.session.commit()
+        
+        return jsonify({'success': True, 'photo_url': photo_url})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# Teacher Photo Upload Route
+@app.route('/admin/upload-teacher-photo', methods=['POST'])
+@admin_required
+def admin_upload_teacher_photo():
+    """Upload teacher photo to Cloudinary"""
+    try:
+        if 'photo' not in request.files:
+            return jsonify({'success': False, 'error': 'No photo provided'}), 400
+        
+        file = request.files['photo']
+        
+        if file.filename == '':
+            return jsonify({'success': False, 'error': 'No photo selected'}), 400
+        
+        if not allowed_file(file.filename):
+            return jsonify({'success': False, 'error': 'Invalid file type. Please upload PNG, JPG, JPEG, GIF, or WEBP'}), 400
+        
+        teacher_id = request.form.get('teacher_id', 'new')
+        
+        # Upload to Cloudinary instead of local storage
+        folder = f'solimicrolink/teachers/teacher_{teacher_id}'
+        photo_url = upload_to_cloudinary(file, folder=folder)
+        
+        if not photo_url:
+            return jsonify({'success': False, 'error': 'Failed to upload to Cloudinary'}), 500
+        
+        # If editing existing teacher, update immediately
+        if teacher_id and teacher_id != 'new' and teacher_id != '':
+            try:
+                teacher = Teacher.query.get(int(teacher_id))
+                if teacher:
+                    teacher.photo_url = photo_url
+                    db.session.commit()
+            except Exception as e:
+                print(f"Error updating teacher: {e}")
+        
+        return jsonify({'success': True, 'photo_url': photo_url})
+    
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/admin/check-storage')
+@admin_required
+def check_storage():
+    """Check if persistent storage is working"""
+    import subprocess
+    
+    result = {
+        'upload_folder': UPLOAD_FOLDER,
+        'folder_exists': os.path.exists(UPLOAD_FOLDER),
+        'is_mounted': False,
+        'files': []
+    }
+    
+    # Check if it's a mounted disk (on Render)
+    if IS_RENDER:
+        try:
+            # Check mount info
+            result['mount_info'] = subprocess.check_output(['df', '-h', UPLOAD_FOLDER]).decode()
+            result['is_mounted'] = True
+        except:
+            result['mount_info'] = 'Could not check mount'
+    
+    # List files
+    if os.path.exists(UPLOAD_FOLDER):
+        result['files'] = os.listdir(UPLOAD_FOLDER)[:10]
+        result['file_count'] = len(os.listdir(UPLOAD_FOLDER))
+    
+    return jsonify(result)
+
 # ==================== NEW ADMIN ROUTES (FAQs, Policies, About, Locations) ====================
 
 # FAQ Admin Routes
@@ -1744,95 +2318,6 @@ def admin_edit_policy(policy_id):
         return redirect(url_for('admin_policies'))
     return render_template('admin/policy_form.html', policy=policy)
 
-
-# ==================== TRAINING PROGRAM ROUTES ====================
-
-@app.route('/training')
-def training_page():
-    """Training programs overview page"""
-    services = Service.query.filter_by(category='training', is_active=True).all()
-    return render_template('training.html', services=services)
-
-@app.route('/training/ai-ml')
-def training_ai_ml():
-    """AI & Machine Learning detail page"""
-    print("\n=== DEBUG: training_ai_ml route called ===")
-    
-    # Try multiple ways to find the service
-    service = Service.query.filter_by(name='AI & Machine Learning', is_active=True).first()
-    print(f"Search by name 'AI & Machine Learning': {service is not None}")
-    
-    if not service:
-        service = Service.query.filter_by(subcategory='ai-ml', category='training', is_active=True).first()
-        print(f"Search by subcategory 'ai-ml': {service is not None}")
-    
-    if not service:
-        # Let's see what training services exist
-        all_training = Service.query.filter_by(category='training').all()
-        print(f"All training services in DB: {[(s.id, s.name, s.subcategory) for s in all_training]}")
-        abort(404)
-    
-    print(f"Found service: ID={service.id}, Name={service.name}")
-    return render_template('training_detail.html', service=service)
-
-@app.route('/training/power-platform')
-def training_power_platform():
-    """Microsoft Power Platform detail page"""
-    print("\n=== DEBUG: training_power_platform route called ===")
-    
-    service = Service.query.filter_by(name='Microsoft Power Platform', is_active=True).first()
-    print(f"Search by name 'Microsoft Power Platform': {service is not None}")
-    
-    if not service:
-        service = Service.query.filter_by(subcategory='power-platform', category='training', is_active=True).first()
-        print(f"Search by subcategory 'power-platform': {service is not None}")
-    
-    if not service:
-        all_training = Service.query.filter_by(category='training').all()
-        print(f"All training services in DB: {[(s.id, s.name, s.subcategory) for s in all_training]}")
-        abort(404)
-    
-    print(f"Found service: ID={service.id}, Name={service.name}")
-    return render_template('training_detail.html', service=service)
-
-@app.route('/training/cybersecurity')
-def training_cybersecurity():
-    """Cybersecurity detail page"""
-    print("\n=== DEBUG: training_cybersecurity route called ===")
-    
-    service = Service.query.filter_by(name='Cybersecurity', is_active=True).first()
-    print(f"Search by name 'Cybersecurity': {service is not None}")
-    
-    if not service:
-        service = Service.query.filter_by(subcategory='cybersecurity', category='training', is_active=True).first()
-        print(f"Search by subcategory 'cybersecurity': {service is not None}")
-    
-    if not service:
-        all_training = Service.query.filter_by(category='training').all()
-        print(f"All training services in DB: {[(s.id, s.name, s.subcategory) for s in all_training]}")
-        abort(404)
-    
-    print(f"Found service: ID={service.id}, Name={service.name}")
-    return render_template('training_detail.html', service=service)
-
-@app.route('/test-training/<int:service_id>')
-def test_training(service_id):
-    """Test route to directly load a training service by ID"""
-    service = Service.query.get(service_id)
-    if not service or service.category != 'training':
-        return f"Service {service_id} not found or not training", 404
-    
-    return f"""
-    <h1>Test Training Page</h1>
-    <p>Service ID: {service.id}</p>
-    <p>Name: {service.name}</p>
-    <p>Category: {service.category}</p>
-    <p>Subcategory: {service.subcategory}</p>
-    <p>Active: {service.is_active}</p>
-    <p><a href="/training/{service.subcategory}">Try regular route</a></p>
-    <p><a href="/training/ai-ml">Try AI ML route</a></p>
-    """
-
 @app.route('/admin/policies/delete/<int:policy_id>', methods=['POST'])
 @admin_required
 def admin_delete_policy(policy_id):
@@ -1844,6 +2329,7 @@ def admin_delete_policy(policy_id):
     return redirect(url_for('admin_policies'))
 
 # About Us Admin Routes
+# ==================== ADMIN ABOUT US ROUTE ====================
 @app.route('/admin/about')
 @admin_required
 def admin_about():
@@ -1865,6 +2351,7 @@ def admin_update_about():
     about.content = request.form.get('content')
     about.mission = request.form.get('mission')
     about.vision = request.form.get('vision')
+    about.owner_photo_url = request.form.get('owner_photo_url')
     
     # Handle JSON fields
     values = request.form.get('values', '').split('\n')
@@ -1958,9 +2445,93 @@ def admin_delete_location(location_id):
     flash('Location deleted successfully', 'success')
     return redirect(url_for('admin_locations'))
 
+# ==================== TRAINING PROGRAM ROUTES ====================
+
+@app.route('/training')
+def training_page():
+    """Training programs overview page"""
+    services = Service.query.filter_by(category='training', is_active=True).all()
+    return render_template('training.html', services=services)
+
+@app.route('/training/ai-ml')
+def training_ai_ml():
+    """AI & Machine Learning detail page"""
+    print("\n=== DEBUG: training_ai_ml route called ===")
+    
+    service = Service.query.filter_by(name='AI & Machine Learning', is_active=True).first()
+    print(f"Search by name 'AI & Machine Learning': {service is not None}")
+    
+    if not service:
+        service = Service.query.filter_by(subcategory='ai-ml', category='training', is_active=True).first()
+        print(f"Search by subcategory 'ai-ml': {service is not None}")
+    
+    if not service:
+        all_training = Service.query.filter_by(category='training').all()
+        print(f"All training services in DB: {[(s.id, s.name, s.subcategory) for s in all_training]}")
+        abort(404)
+    
+    print(f"Found service: ID={service.id}, Name={service.name}")
+    return render_template('training_detail.html', service=service)
+
+@app.route('/training/power-platform')
+def training_power_platform():
+    """Microsoft Power Platform detail page"""
+    print("\n=== DEBUG: training_power_platform route called ===")
+    
+    service = Service.query.filter_by(name='Microsoft Power Platform', is_active=True).first()
+    print(f"Search by name 'Microsoft Power Platform': {service is not None}")
+    
+    if not service:
+        service = Service.query.filter_by(subcategory='power-platform', category='training', is_active=True).first()
+        print(f"Search by subcategory 'power-platform': {service is not None}")
+    
+    if not service:
+        all_training = Service.query.filter_by(category='training').all()
+        print(f"All training services in DB: {[(s.id, s.name, s.subcategory) for s in all_training]}")
+        abort(404)
+    
+    print(f"Found service: ID={service.id}, Name={service.name}")
+    return render_template('training_detail.html', service=service)
+
+@app.route('/training/cybersecurity')
+def training_cybersecurity():
+    """Cybersecurity detail page"""
+    print("\n=== DEBUG: training_cybersecurity route called ===")
+    
+    service = Service.query.filter_by(name='Cybersecurity', is_active=True).first()
+    print(f"Search by name 'Cybersecurity': {service is not None}")
+    
+    if not service:
+        service = Service.query.filter_by(subcategory='cybersecurity', category='training', is_active=True).first()
+        print(f"Search by subcategory 'cybersecurity': {service is not None}")
+    
+    if not service:
+        all_training = Service.query.filter_by(category='training').all()
+        print(f"All training services in DB: {[(s.id, s.name, s.subcategory) for s in all_training]}")
+        abort(404)
+    
+    print(f"Found service: ID={service.id}, Name={service.name}")
+    return render_template('training_detail.html', service=service)
+
+@app.route('/test-training/<int:service_id>')
+def test_training(service_id):
+    """Test route to directly load a training service by ID"""
+    service = Service.query.get(service_id)
+    if not service or service.category != 'training':
+        return f"Service {service_id} not found or not training", 404
+    
+    return f"""
+    <h1>Test Training Page</h1>
+    <p>Service ID: {service.id}</p>
+    <p>Name: {service.name}</p>
+    <p>Category: {service.category}</p>
+    <p>Subcategory: {service.subcategory}</p>
+    <p>Active: {service.is_active}</p>
+    <p><a href="/training/{service.subcategory}">Try regular route</a></p>
+    <p><a href="/training/ai-ml">Try AI ML route</a></p>
+    """
+
 # ==================== EXISTING ADMIN ROUTES ====================
-# (All your original admin routes from your working app.py go here)
-# Copy and paste ALL your existing admin routes from your old app.py below
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -2430,7 +3001,13 @@ def admin_reviews():
     
     reviews = query.order_by(Review.created_at.desc()).all()
     
-    return render_template('admin/reviews.html', reviews=reviews, status_filter=status_filter)
+    # Get counts for the filter dropdown
+    pending_count = Review.query.filter_by(status='pending').count()
+    
+    return render_template('admin/reviews.html', 
+                          reviews=reviews, 
+                          status_filter=status_filter,
+                          pending_count=pending_count)
 
 @app.route('/admin/review/<int:review_id>/update-status', methods=['POST'])
 @admin_required
@@ -2513,7 +3090,7 @@ def admin_update_settings():
         # Footer settings
         footer_settings = {
             'footer_description': request.form.get('footer_description', ''),
-            'footer_email': request.form.get('footer_email', 'info@soli-microlink.com'),
+            'footer_email': request.form.get('footer_email', 'info@solmicrolink.com'),
             'footer_phone': request.form.get('footer_phone', ''),
             'footer_address': request.form.get('footer_address', ''),
             'copyright_text': request.form.get('copyright_text', '© 2026 SOLI MICROLINK. All rights reserved.'),
@@ -2568,5 +3145,4 @@ print("="*60)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5011))
-    # Use debug=False in production on Render
-    app.run(debug=False, host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0', port=port)
